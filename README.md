@@ -10,8 +10,10 @@ oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest
 
 The command above will create a local directory with a dump of the Forklift state.
 
-You will get a dump of:
-- TBD
+You will get a dump of Forklift-related:
+- logs
+- CRs
+- metrics
 
 #### Preview metrics on local Prometheus server
 

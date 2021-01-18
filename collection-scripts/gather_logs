@@ -1,0 +1,21 @@
+#!/bin/bash
+source pwait
+max_parallelism=10
+
+# Namespaces passed in from main gather
+namespaces=$1
+
+# Collect all Pod logs from namespaces where MTC is installed
+for ns in ${namespaces[@]}; do
+  for pod in $(/usr/bin/oc get pods --no-headers --namespace $ns | awk '{print $1}'); do
+    object_collection_path="/must-gather/host/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[cluster=host][ns=${ns}][pod=${pod}] Collecting Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    echo "[cluster=host][ns=${ns}][pod=${pod}] Collecting previous Pod logs..."
+    /usr/bin/oc logs --previous --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/previous.log" & 
+    pwait $max_parallelism
+  done
+done
+
+wait
