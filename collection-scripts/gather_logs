@@ -5,7 +5,7 @@ max_parallelism=10
 # Namespaces passed in from main gather
 namespaces=$1
 
-# Collect all Pod logs from namespaces where MTC is installed
+# Collect all Pod logs from namespaces where Forklift is installed
 for ns in ${namespaces[@]}; do
   for pod in $(/usr/bin/oc get pods --no-headers --namespace $ns | awk '{print $1}'); do
     object_collection_path="/must-gather/host/namespaces/${ns}/logs/${pod}"
@@ -17,5 +17,7 @@ for ns in ${namespaces[@]}; do
     pwait $max_parallelism
   done
 done
+
+# TODO: Consider adding logs for Kubevirt, but it could be huge
 
 wait

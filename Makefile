@@ -1,6 +1,6 @@
 IMAGE_REGISTRY ?= quay.io
 IMAGE_TAG ?= latest
-IMAGE_NAME ?= maufart/forklift-must-gather
+IMAGE_NAME ?= konveyor/forklift-must-gather
 
 PROMETHEUS_LOCAL_DATA_DIR ?= /tmp/mig-prometheus-data-dump
 # Search for prom_data.tar.gz archive in must-gather output in currect directory by default
@@ -21,7 +21,7 @@ prometheus-run: prometheus-cleanup-container prometheus-load-dump
 	  --mount type=bind,source=${PROMETHEUS_LOCAL_DATA_DIR},target=/etc/prometheus/data \
 	  --name mig-metrics-prometheus \
 	  --publish 127.0.0.1:9090:9090 \
-	  prom/prometheus:v2.6.0 \
+	  prom/prometheus:v2.21.0 \
 	&& echo "Started Prometheus on http://localhost:9090"
 
 prometheus-load-dump: prometheus-check-archive-file prometheus-cleanup-data

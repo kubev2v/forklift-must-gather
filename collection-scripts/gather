@@ -3,8 +3,8 @@
 unset KUBECONFIG
 for localns in $(/usr/bin/oc get forkliftcontrollers.forklift.konveyor.io --all-namespaces --no-headers | awk '{print $1}'); do
 
-  # Collect the Forklift and related CRs
-  echo "[cluster=host] Gathering Forklift and related CRs for namespaces [${localns}]"
+  # Collect the Forklift and Kubevirt related CRs
+  echo "[cluster=host] Gathering Forklift and Kubevirt related CRs for namespaces [${localns}]"
   /usr/bin/gather_crs ${localns} &
 
   # Collect the logs
