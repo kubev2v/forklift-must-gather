@@ -14,7 +14,7 @@ time_ago=$(($time_now - 6*60*60))
 oc get all -n openshift-monitoring > "${object_collection_path}/openshift_monitoring_status"
 
 # Prometheus - metadata json dump
-echo "[cluster=host] Dumping Prometheus metadata ..."
+echo "Dumping Prometheus metadata ..."
 oc exec -n openshift-monitoring prometheus-k8s-0 -- \
   curl -G http://localhost:9090/api/v1/targets/metadata -s --data match_target%3D%7Binstance!%3D%22%22%7D \
   > "${object_collection_path}/prometheus_target_metadata.json"
@@ -23,12 +23,12 @@ oc exec -n openshift-monitoring prometheus-k8s-0 -- \
 # TODO: add relevant Forklift and Kubevirt metrics
 for metric_name in node_load1
 do
-  echo "[cluster=host] Capturing prometheus metric [${metric_name}]"
+  echo "Capturing prometheus metric [${metric_name}]"
   oc exec -n openshift-monitoring prometheus-k8s-0 -- curl -s "http://localhost:9090/api/v1/query_range?query=${metric_name}&start=${time_ago}&end=${time_now}&step=14" \
     > dump.json
 
   # JSON data
-  echo "[cluster=host] Building chart for prometheus metric [${metric_name}]"
+  echo "Building chart for prometheus metric [${metric_name}]"
   cat dump.json > "${object_collection_path}/prometheus_queries/${metric_name}.json"
 
   # HTML file with the chart (using concatenated write to file, an elegant string replacement/variable evaluation didn't work with 100s kBs data)
