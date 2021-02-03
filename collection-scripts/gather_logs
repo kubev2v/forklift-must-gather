@@ -1,0 +1,36 @@
+#!/bin/bash
+source pwait
+max_parallelism=10
+
+# Namespaces passed in from main gather
+namespaces=$1
+
+# Collect all Pod logs from namespaces where Forklift is installed
+for ns in ${namespaces[@]}; do
+  for pod in $(/usr/bin/oc get pods --no-headers --namespace $ns | awk '{print $1}'); do
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    echo "[ns=${ns}][pod=${pod}] Collecting previous Pod logs..."
+    /usr/bin/oc logs --previous --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/previous.log" &
+    pwait $max_parallelism
+  done
+done
+
+
+# Collect related CNV components logs: CDI and vm-import
+ns=openshift-cnv
+for component in cdi vm-import; do
+  for pod in $(/usr/bin/oc get pods --no-headers --namespace $ns | grep $component | awk '{print $1}'); do
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    echo "[ns=${ns}][pod=${pod}] Collecting previous Pod logs..."
+    /usr/bin/oc logs --previous --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/previous.log" &
+    pwait $max_parallelism
+  done
+done
+
+wait
