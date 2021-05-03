@@ -1,22 +1,23 @@
 #!/bin/bash
 
 unset KUBECONFIG
+
+# Optional targeted parameters
+if [ ! -z "${NS}" ]; then
+  echo "Running targeted gathering for namespace ${NS}"
+  export userns="${NS}"
+fi
+
+# Explore where Forklift is installed
 for localns in $(/usr/bin/oc get forkliftcontrollers.forklift.konveyor.io --all-namespaces --no-headers | awk '{print $1}'); do
 
   # Collect the Forklift and Kubevirt related CRs
   echo "Gathering Forklift and Kubevirt related CRs for namespaces [${localns}]"
-  /usr/bin/gather_crs ${localns} &
+  /usr/bin/gather_crs ${localns} ${userns} &
 
   # Collect the logs
   echo "Gathering logs for namespaces [${localns}]"
   /usr/bin/gather_logs ${localns} &
-
-  # Collect metrics from Prometheus
-  echo "Gathering prometheus metrics"
-  /usr/bin/gather_metrics &
-
-  # Collect memory profile data
-  /usr/bin/gather_pprof ${localns} &
 
   # Waits for gather_crs, gather_logs, gather_metrics running in background
   echo "Waiting for background gather tasks to finish"
