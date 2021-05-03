@@ -1,6 +1,7 @@
 IMAGE_REGISTRY ?= quay.io
 IMAGE_TAG ?= latest
 IMAGE_NAME ?= konveyor/forklift-must-gather
+CONTAINER_ENGINE ?= docker
 
 PROMETHEUS_LOCAL_DATA_DIR ?= /tmp/mig-prometheus-data-dump
 # Search for prom_data.tar.gz archive in must-gather output in currect directory by default
@@ -9,15 +10,15 @@ PROMETHEUS_DUMP_PATH ?= $(shell find ./must-gather.local* -name prom_data.tar.gz
 build: docker-build docker-push
 
 docker-build:
-	docker build -t ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
+	${CONTAINER_ENGINE} build -t ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
 
 docker-push:
-	docker push ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+	${CONTAINER_ENGINE} push ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
 
 .PHONY: build docker-build docker-push
 
 prometheus-run: prometheus-cleanup-container prometheus-load-dump
-	docker run -d \
+	${CONTAINER_ENGINE} run -d \
 	  --mount type=bind,source=${PROMETHEUS_LOCAL_DATA_DIR},target=/etc/prometheus/data \
 	  --name mig-metrics-prometheus \
 	  --publish 127.0.0.1:9090:9090 \
@@ -31,8 +32,8 @@ prometheus-load-dump: prometheus-check-archive-file prometheus-cleanup-data
 
 prometheus-cleanup-container:
 	# delete data files directly from the container to allow delete data directory from outside of the container
-	docker exec mig-metrics-prometheus rm -rf /prometheus || true
-	docker rm -f mig-metrics-prometheus || true
+	${CONTAINER_ENGINE} exec mig-metrics-prometheus rm -rf /prometheus || true
+	${CONTAINER_ENGINE} rm -f mig-metrics-prometheus || true
 
 prometheus-cleanup-data:
 	rm -rf ${PROMETHEUS_LOCAL_DATA_DIR}
