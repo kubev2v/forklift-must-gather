@@ -2,9 +2,8 @@
 source pwait
 max_parallelism=10
 
-# Forklift namespace passed in from main gather
-backend_namespace=$1
-user_namespace=$2
+# Namespaces passed in from main gather
+namespaces=$1
 
 # Resource list
 resources=()
@@ -19,21 +18,9 @@ for component in forklift kubevirt; do
 
   # we use nested loops to nicely output objects partitioned per namespace, kind
   for resource in ${resources[@]}; do
-    echo "Collecting CR ${resource}"
-
-    if [ -z "${user_namespace}" ]; then
-      objects=$(/usr/bin/oc get ${resource} --all-namespaces -o custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers 2> /dev/null)
-    else
-      migtoolkit_cnv_objects=$(/usr/bin/oc get ${resource} -n ${backend_namespace} -o custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers 2> /dev/null)
-      vm_related_objects=$(/usr/bin/oc get ${resource} -n ${user_namespace} -o custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers 2> /dev/null)
-      objects="$(echo $migtoolkit_cnv_objects; echo $vm_related_objects)"
-    fi
-
-    echo "$objects" | \
+    echo "Collecting ${resource}"
+    /usr/bin/oc get ${resource} --all-namespaces -o custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers 2> /dev/null | \
     while read ocresource; do
-      if [ -z "${ocresource}" ]; then
-        continue
-      fi
       ocobject=$(echo $ocresource | awk '{print $1}')
       ocproject=$(echo $ocresource | awk '{print $2}')
       if [ -z "${ocproject}" ]|[ "${ocproject}" == "<none>" ]; then
