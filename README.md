@@ -3,7 +3,7 @@
 `must-gather` is a tool built on top of [OpenShift must-gather](https://github.com/openshift/must-gather)
 that expands its capabilities to gather Forklift specific resources
 
-### Usage
+## Usage
 ```sh
 oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest
 ```
@@ -13,9 +13,19 @@ The command above will create a local directory with a dump of the Forklift stat
 You will get a dump of Forklift-related:
 - logs
 - CRs
-- metrics
+- metrics (optional)
 
-#### Preview metrics on local Prometheus server
+### Targeted gathering
+
+To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources.
+
+It is possible specify namespace (NS), plan (PLAN) or virtual machine ID (VM).
+
+```sh
+oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- NS=ns1 PLAN=plan1 VM=vm-3345 /usr/bin/targeted
+```
+
+### Preview metrics on local Prometheus server
 
 Get Prometheus metrics data directory dump (last day, might take a while):
 ```sh
@@ -28,28 +38,7 @@ make prometheus-run # and prometheus-cleanup when you're done
 ```
 The latest Prometheus data file (prom_data.tar.gz) in current directory/subdirectories is searched by default. Could be specified in ```PROMETHEUS_DUMP_PATH``` environment variable.
 
-#### Analyze forklift-controller memory profile
-
-In the must-gather archive, find the `memory-profiles` directory:
-
-```sh
-cd memory-profiles/openshift-migration
-```
-
-Here, you will find memory profile of forklift-controller in two formats - a binary and a png file. The binary file `pprof_raw_payload` contains the full heap represention of forklift-controller, while the PNG file is a simple graphical representation of memory allocation.
-
-To analyze the raw binary heap data on your machine, use `go tool pprof`:
-
-```sh
-go tool pprof pprof_raw_payload
-```
-
-This will open an interactive `pprof` terminal. Type `help` in the terminal for more information.
-
-The instructions to set up pprof are available here: [https://github.com/google/pprof](https://github.com/google/pprof) 
-
-
-### Development
+## Development
 You can build the image locally using the Dockerfile included.
 
 A `Makefile` is also provided. To use it, you must pass a repository via the command-line using the variable `IMAGE_NAME`.

@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# THIS SCRIPT PROVIDES TARGETED GATHERING BASED ON NS, PLAN AND VM NAME
+#
+# NOTICE: THIS FILE IS NOT INCLUDED IN THE DEFAULT GATHER SCRIPT
+#
+# Can be executed by: oc adm must-gather --image quay.io/konveyor/forklift-must-gather:latest -- NS=foo PLAN=bar VM=baz MIGRATION_NS=openshift-migration /usr/bin/targeted
+#
+
+unset KUBECONFIG
+source pwait
+max_parallelism=10
+
+# Namespaces passed in from main gather
+namespaces=$1
+targeted_query="$(cat /tmp/targeted_logs_grep_query)"
+
+# Collect all Pod logs from namespaces where Forklift is installed
+for ns in ${namespaces[@]}; do
+  for pod in $(/usr/bin/oc get pods --no-headers --namespace $ns | awk '{print $1}'); do
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
+    pwait $max_parallelism
+  done
+done
+
+
+# Collect related CNV components logs: CDI and vm-import
+ns=openshift-cnv
+for component in cdi vm-import; do
+  for pod in $(/usr/bin/oc get pods --no-headers --namespace $ns | grep $component | awk '{print $1}'); do
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
+    pwait $max_parallelism
+  done
+done
+
+wait

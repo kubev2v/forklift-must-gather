@@ -1,4 +1,11 @@
 #!/bin/bash
+#
+# THIS SCRIPT PROVIDES TARGETED GATHERING BASED ON NS, PLAN AND VM NAME
+#
+# NOTICE: THIS FILE IS NOT INCLUDED IN THE DEFAULT GATHER SCRIPT
+#
+# Can be executed by: oc adm must-gather --image quay.io/konveyor/forklift-must-gather:latest -- NS=foo PLAN=bar VM=baz /usr/bin/targeted
+#
 
 unset KUBECONFIG
 
@@ -6,16 +13,12 @@ unset KUBECONFIG
 for localns in $(/usr/bin/oc get forkliftcontrollers.forklift.konveyor.io --all-namespaces --no-headers | awk '{print $1}'); do
 
   # Collect the Forklift and Kubevirt related CRs
-  echo "Gathering Forklift and Kubevirt related CRs for namespaces [${localns}]"
-  /usr/bin/gather_crs ${localns} &
+  echo "Targeted gathering for Forklift in namespaces [${localns}]"
+  /usr/bin/targeted_crs ${localns} || exit 1
 
   # Collect the logs
   echo "Gathering logs for namespaces [${localns}]"
-  /usr/bin/gather_logs ${localns} &
-
-  # Waits for gather_crs, gather_logs, gather_metrics running in background
-  echo "Waiting for background gather tasks to finish"
-  wait
+  /usr/bin/targeted_logs ${localns}
 done
 
 # Tar all must-gather artifacts for faster transmission 
@@ -27,7 +30,6 @@ rm -rf /must-gather/*
 mv ${archive_path}/must-gather.tar.gz /must-gather/
 rmdir ${archive_path}
 echo "Created /must-gather/must-gather.tar.gz"
-
 
 echo "Waiting for copy phase..."
 exit 0

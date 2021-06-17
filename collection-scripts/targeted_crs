@@ -1,0 +1,136 @@
+#!/bin/bash
+#
+# THIS SCRIPT PROVIDES TARGETED GATHERING BASED ON NS, PLAN AND VM NAME
+#
+# NOTICE: THIS FILE IS NOT INCLUDED IN THE DEFAULT GATHER SCRIPT
+#
+# Can be executed by: oc adm must-gather --image quay.io/konveyor/forklift-must-gather:latest -- NS=foo PLAN=bar VM=baz MIGRATION_NS=openshift-migration /usr/bin/targeted
+#
+
+unset KUBECONFIG
+
+object_collection_path="/must-gather"
+mkdir -p ${object_collection_path}
+
+#source pwait
+#max_parallelism=10
+
+# Set Forklift namespace
+MIGRATION_NS=$1
+
+# Resource list
+dv_resources=()
+plan_resources=()
+vm_resources=()
+vmimport_resources=()
+target_ns=""
+log_filter_query=""
+
+# Parse provided parameters
+if [ -z $NS ] && [ -z $PLAN ] && [ -z $VM ]; then
+  echo "ERROR: Missing targeted gathering parameters. Use NS, PLAN and/or VM env variables."
+  exit 1
+fi
+
+if [ ! -z $NS ]; then
+  echo "Targeted gathering for Namespace: $NS"
+  # Populate NS resources only if PLAN and VM parameters were not provided
+  if [[ -z $PLAN && -z $VM ]]; then
+    plans_data=$(/usr/bin/oc get plans -n $MIGRATION_NS -o json)
+    plan_resources+=($(echo $plans_data | jq ".items[]|select(.spec.targetNamespace==\"$NS\")|.metadata.name" | sed 's/"//g'))
+    vm_resources+=($(echo $plans_data | jq ".items[]|select(.spec.targetNamespace==\"$NS\")|.spec.vms[] .id" | sed 's/"//g'))
+  fi
+  target_ns=$NS
+fi
+
+if [ ! -z $PLAN ]; then
+  echo "Targeted gathering for Plan: $PLAN"
+  plan_data=$(/usr/bin/oc get plan $PLAN -n $MIGRATION_NS -o json)
+  if [ ! -z "${plan_data}" ]; then
+    plan_resources+=("$PLAN")
+    vm_resources+=($(echo $plan_data | jq '.spec.vms[] .id' | sed 's/"//g'))
+    target_ns=$(echo $plan_data | jq '.spec.targetNamespace' | sed 's/"//g')
+  fi
+fi
+
+if [ ! -z $VM ]; then
+  # VM ID (e.g. from migration plan) needs to be provided, since kubevirt VM name is not clearly translate-able to its migration id
+  echo "Targeted gathering for VM ID: $VM"
+  vm_resources+=("$VM")
+  if [ -z "${target_ns}" ]; then
+    # Try to identify a namespace for provided VM name
+    vm_list=$(oc get virtualmachines -A | grep ${VM})
+    if [ $(echo "$vm_list" | wc -l) == "1" ]; then
+      target_ns=$(echo "$vm_list" | cut -f1 -d" ")
+    else
+      echo "ERROR: Mutiple VMs found for provided VM name. Use NS env variable together with VM env variable to specify the right one using its ID."
+      echo "${vm_list}"
+      exit 1
+    fi
+  fi
+fi
+
+# Start gathering of resources based on its type
+
+function dump_resource {
+  resource=$1
+  ocobject=$2
+  ocproject=$3
+  echo "Dumping ${resource}: ${ocobject} from ${ocproject}"
+  if [ -z "${ocproject}" ]|[ "${ocproject}" == "<none>" ]; then
+    object_collection_path=/must-gather/cluster-scoped-resources/${resource}
+    mkdir -p ${object_collection_path}
+    /usr/bin/oc get ${resource} -o yaml ${ocobject} &> ${object_collection_path}/${ocobject}.yaml
+  else
+    object_collection_path=/must-gather/namespaces/${ocproject}/crs/${resource}
+    mkdir -p ${object_collection_path}
+    /usr/bin/oc get ${resource} -n ${ocproject} -o yaml ${ocobject} &> ${object_collection_path}/${ocobject}.yaml
+  fi
+}
+
+if [ ! -z "${plan_resources}" ]; then
+    echo "Gathering plans.."
+    for plan_id in ${plan_resources[@]}; do
+      log_filter_query="$log_filter_query|openshift-migration\/$plan_id"
+      dump_resource "plan" $plan_id $MIGRATION_NS
+    done
+fi
+
+if [ ! -z "${vm_resources}" ]; then
+    echo "Gathering virtualmachines.."
+    for vm_id in ${vm_resources[@]}; do
+      # Parse VM and VMImport for related resources
+      vmimports_data=$(/usr/bin/oc get virtualmachineimport --selector vmID=${vm_id} -n ${target_ns} -o json)
+      target_vm_name=$(echo $vmimports_data | jq '.items[]|.spec.targetVmName' | sed 's/"//g')
+      vmimport_resources+=$(echo $vmimports_data | jq '.items[]|.metadata.name' | sed 's/"//g')
+
+      vm_data=$(/usr/bin/oc get virtualmachine ${target_vm_name} -n ${target_ns} -o json)
+      dv_resources+=$(echo $vm_data | jq '.spec.template.spec.volumes[] .dataVolume.name' | sed 's/"//g')
+    
+      log_filter_query="$log_filter_query|$vm_id"
+      dump_resource "virtualmachine" $target_vm_name $target_ns
+    done
+fi
+
+if [ ! -z "${vmimport_resources}" ]; then
+    echo "Gathering virtualmachineimports.."
+    for vmi_id in ${vmimport_resources[@]}; do
+        dump_resource "virtualmachineimport" $vmi_id $target_ns
+    done
+fi
+
+if [ ! -z "${dv_resources}" ]; then
+    echo "Gathering datavolumes.."
+    for dv_id in ${dv_resources[@]}; do
+        dump_resource "datavolume" $dv_id $target_ns
+    done
+fi
+
+# Show message in case of empty result
+if [ -z $plan_resources ] && [ -z $vm_resources ] && [ -z $vmimport_resources ] && [ -z $dv_resources ]; then
+  echo "ERROR: No resources matching the criteria were found. Try adjust NS, PLAN or VM env variables."
+  exit 1
+fi
+
+# Store condition for logs filtering
+echo "${log_filter_query:1}" > /tmp/targeted_logs_grep_query
