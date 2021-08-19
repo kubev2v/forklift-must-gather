@@ -17,12 +17,27 @@ You will get a dump of Forklift-related:
 
 ### Targeted gathering
 
-To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources.
+To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources. It is possible specify namespace (NS), plan (PLAN) or virtual machine ID (VM).
 
-It is possible specify namespace (NS), plan (PLAN) or virtual machine ID (VM).
+Following targeted gathering parameters are supported:
+
+Namespace
 
 ```sh
-oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- NS=ns1 PLAN=plan1 VM=vm-3345 /usr/bin/targeted
+oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- NS=ns1 /usr/bin/targeted
+```
+
+Plan
+
+```sh
+oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- PLAN=plan1 /usr/bin/targeted
+```
+
+
+VM (its ID from the Plan) together with namespace where the VM belongs to
+
+```sh
+oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- NS=ns1 VM=vm-3345 /usr/bin/targeted
 ```
 
 ### Preview metrics on local Prometheus server
