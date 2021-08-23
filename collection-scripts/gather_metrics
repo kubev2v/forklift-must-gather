@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# NOTICE: THIS FILE IS NOT INCLUDED IN THE DEFAULT GATHER SCRIPT
 
 # Prepare gather setup
 unset KUBECONFIG
