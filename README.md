@@ -13,7 +13,6 @@ The command above will create a local directory with a dump of the Forklift stat
 You will get a dump of Forklift-related:
 - logs
 - CRs
-- metrics (optional)
 
 ### Targeted gathering
 
@@ -39,19 +38,6 @@ VM (its ID from the Plan) together with namespace where the VM belongs to
 ```sh
 oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- NS=ns1 VM=vm-3345 /usr/bin/targeted
 ```
-
-### Preview metrics on local Prometheus server
-
-Get Prometheus metrics data directory dump (last day, might take a while):
-```sh
-oc adm must-gather --image quay.io/konveyor/forklift-must-gather:latest -- /usr/bin/gather_metrics_dump
-```
-
-Run local Prometheus instance with dumped data:
-```sh
-make prometheus-run # and prometheus-cleanup when you're done
-```
-The latest Prometheus data file (prom_data.tar.gz) in current directory/subdirectories is searched by default. Could be specified in ```PROMETHEUS_DUMP_PATH``` environment variable.
 
 ## Development
 You can build the image locally using the Dockerfile included.
