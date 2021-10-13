@@ -34,6 +34,11 @@ fi
 
 if [ ! -z $NS ]; then
   echo "Targeted gathering for Namespace: $NS"
+  # Check if the NS exists (so it could used to get Plans/VMs later)
+  if [ $(oc get namespace "$NS" 2>&1 | grep "not found" | wc -l) == "1" ]; then
+    echo "ERROR: Specified NS doesn't exist, targeted gathering cannot continue. Set NS to an existing namespace."
+    exit 1
+  fi
   # Populate NS resources only if PLAN and VM parameters were not provided
   if [[ -z $PLAN && -z $VM ]]; then
     plans_data=$(/usr/bin/oc get plans -n $MIGRATION_NS -o json)
