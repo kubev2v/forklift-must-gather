@@ -21,6 +21,11 @@ for localns in $(/usr/bin/oc get forkliftcontrollers.forklift.konveyor.io --all-
   /usr/bin/targeted_logs ${localns}
 done
 
+# Remove empty files to ensure that the directory structure doesn't confuse user with not relevant entries
+echo "Cleaning must-gather directory structure..."
+find /must-gather -type f -empty -print -delete
+find /must-gather -type d -empty -print -delete
+
 # Tar all must-gather artifacts for faster transmission 
 echo "Tarring must-gather artifacts..."
 archive_path="/must-gather-archive"
