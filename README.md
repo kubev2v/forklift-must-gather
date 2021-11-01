@@ -16,7 +16,7 @@ You will get a dump of Forklift-related:
 
 ### Targeted gathering
 
-To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources. It is possible specify namespace (NS), plan (PLAN) or virtual machine ID (VM).
+To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources. It is possible specify namespace (NS), plan (PLAN) or virtual machine ID (VM). The archive will only contain CRs relevant for selected resources and filtered set of log files.
 
 Following targeted gathering parameters are supported:
 
