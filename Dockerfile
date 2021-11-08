@@ -1,7 +1,3 @@
-FROM golang:1.14.4 as gobuilder
-
-RUN go get github.com/google/pprof
-
 FROM quay.io/openshift/origin-must-gather:4.7 as builder
 
 FROM registry.access.redhat.com/ubi8-minimal:latest
@@ -9,7 +5,6 @@ RUN echo -ne "[centos-8-appstream]\nname = CentOS 8 (RPMs) - AppStream\nbaseurl 
 
 RUN microdnf -y install rsync tar gzip graphviz jq findutils
 
-COPY --from=gobuilder /go/bin/pprof /usr/bin/pprof
 COPY --from=builder /usr/bin/oc /usr/bin/oc
 COPY collection-scripts/* /usr/bin/
 
