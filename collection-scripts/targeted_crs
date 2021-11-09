@@ -22,7 +22,6 @@ MIGRATION_NS=$1
 dv_resources=()
 plan_resources=()
 vm_resources=()
-vmimport_resources=()
 target_ns=""
 log_filter_query=""
 
@@ -42,8 +41,8 @@ if [ ! -z $NS ]; then
   # Populate NS resources only if PLAN and VM parameters were not provided
   if [[ -z $PLAN && -z $VM ]]; then
     plans_data=$(/usr/bin/oc get plans -n $MIGRATION_NS -o json)
-    plan_resources+=($(echo $plans_data | jq ".items[]|select(.spec.targetNamespace==\"$NS\")|.metadata.name" | sed 's/"//g'))
-    vm_resources+=($(echo $plans_data | jq ".items[]|select(.spec.targetNamespace==\"$NS\")|.spec.vms[] .id" | sed 's/"//g'))
+    plan_resources+=($(echo $plans_data | jq -r ".items[]|select(.spec.targetNamespace==\"$NS\")|.metadata.name"))
+    vm_resources+=($(echo $plans_data | jq -r ".items[]|select(.spec.targetNamespace==\"$NS\")|.status.migration.vms[] .name"))
   fi
   target_ns=$NS
 fi
@@ -53,14 +52,14 @@ if [ ! -z $PLAN ]; then
   plan_data=$(/usr/bin/oc get plan $PLAN -n $MIGRATION_NS -o json)
   if [ ! -z "${plan_data}" ]; then
     plan_resources+=("$PLAN")
-    vm_resources+=($(echo $plan_data | jq '.spec.vms[] .id' | sed 's/"//g'))
-    target_ns=$(echo $plan_data | jq '.spec.targetNamespace' | sed 's/"//g')
+    vm_resources+=($(echo $plan_data | jq -r '.status.migration.vms[] .name'))
+    target_ns=$(echo $plan_data | jq -r '.spec.targetNamespace')
   fi
 fi
 
 if [ ! -z $VM ]; then
   # VM ID (e.g. from migration plan) needs to be provided, since kubevirt VM name is not clearly translate-able to its migration id
-  echo "Targeted gathering for VM ID: $VM"
+  echo "Targeted gathering for VM: $VM"
   vm_resources+=("$VM")
   if [ -z "${target_ns}" ]; then
     # Try to identify a namespace for provided VM name
@@ -103,24 +102,15 @@ fi
 
 if [ ! -z "${vm_resources}" ]; then
     echo "Gathering virtualmachines.."
-    for vm_id in ${vm_resources[@]}; do
-      # Parse VM and VMImport for related resources
-      vmimports_data=$(/usr/bin/oc get virtualmachineimport --selector vmID=${vm_id} -n ${target_ns} -o json)
-      target_vm_name=$(echo $vmimports_data | jq '.items[]|.spec.targetVmName' | sed 's/"//g')
-      vmimport_resources+=$(echo $vmimports_data | jq '.items[]|.metadata.name' | sed 's/"//g')
-
+    for target_vm_name in ${vm_resources[@]}; do
+      # Parse VM for related resources
       vm_data=$(/usr/bin/oc get virtualmachine ${target_vm_name} -n ${target_ns} -o json)
-      dv_resources+=$(echo $vm_data | jq '.spec.template.spec.volumes[] .dataVolume.name' | sed 's/"//g')
+      for dv_name in $(echo $vm_data | jq -r '.spec.template.spec.volumes[] .dataVolume.name'); do
+        dv_resources+=("$dv_name")
+      done
     
-      log_filter_query="$log_filter_query|$vm_id"
+      log_filter_query="$log_filter_query|$target_vm_name"
       dump_resource "virtualmachine" $target_vm_name $target_ns
-    done
-fi
-
-if [ ! -z "${vmimport_resources}" ]; then
-    echo "Gathering virtualmachineimports.."
-    for vmi_id in ${vmimport_resources[@]}; do
-        dump_resource "virtualmachineimport" $vmi_id $target_ns
     done
 fi
 
@@ -132,10 +122,11 @@ if [ ! -z "${dv_resources}" ]; then
 fi
 
 # Show message in case of empty result
-if [ -z $plan_resources ] && [ -z $vm_resources ] && [ -z $vmimport_resources ] && [ -z $dv_resources ]; then
+if [ -z $plan_resources ] && [ -z $vm_resources ] && [ -z $dv_resources ]; then
   echo "ERROR: No resources matching the criteria were found. Try adjust NS, PLAN or VM env variables."
   exit 1
 fi
 
 # Store condition for logs filtering
-echo "${log_filter_query:1}" > /tmp/targeted_logs_grep_query
+echo "Condition for targeted logs filtering:"
+echo "${log_filter_query:1}" | tee /tmp/targeted_logs_grep_query

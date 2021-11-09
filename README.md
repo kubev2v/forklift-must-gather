@@ -16,7 +16,7 @@ You will get a dump of Forklift-related:
 
 ### Targeted gathering
 
-To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources. It is possible specify namespace (NS), plan (PLAN) or virtual machine ID (VM). The archive will only contain CRs relevant for selected resources and filtered set of log files.
+To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources. It is possible specify namespace (NS), plan (PLAN) or virtual machine name (VM). The archive will only contain CRs relevant for selected resources and filtered set of log files.
 
 Following targeted gathering parameters are supported:
 
@@ -33,7 +33,7 @@ oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- PLAN=
 ```
 
 
-VM (its ID from the Plan) together with namespace where the VM belongs to
+VM name together with namespace where the VM belongs to
 
 ```sh
 oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- NS=ns1 VM=vm-3345 /usr/bin/targeted
