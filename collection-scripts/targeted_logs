@@ -14,6 +14,7 @@ max_parallelism=10
 # Namespaces passed in from main gather
 namespaces=$1
 targeted_query="$(cat /tmp/targeted_logs_grep_query)"
+target_vms="$(cat /tmp/target_vms)"
 
 # Collect all Pod logs from namespaces where Forklift is installed
 for ns in ${namespaces[@]}; do
@@ -37,6 +38,18 @@ for component in cdi vm-import; do
     /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   done
+done
+
+# Collect virt-launcher pod logs for migrated VMs (from VM's target namespace)
+for nsvm in ${target_vms[@]}; do
+  IFS="," read ns vm <<< "${nsvm}"
+  pod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
+  # ^ grep pod names for VM name might not be perfect, but I haven't found any direct link
+  object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+  mkdir -p ${object_collection_path}
+  echo "[ns=${ns}][pod=${pod}] Collecting virt-launcher Pod logs..."
+  /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+  pwait $max_parallelism
 done
 
 wait
