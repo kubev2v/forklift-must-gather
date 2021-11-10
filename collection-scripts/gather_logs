@@ -33,4 +33,14 @@ for component in cdi vm-import; do
   done
 done
 
+# Collect virt-launcher pod logs cluster-wide
+for nspod in $(oc get pods --no-headers --all-namespaces --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.namespace}},{{.metadata.name}}{{"\n"}}{{end}}'); do
+  IFS="," read ns pod <<< "${nspod}"
+  object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+  mkdir -p ${object_collection_path}
+  echo "[ns=${ns}][pod=${pod}] Collecting launcher Pod logs..."
+  /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+  pwait $max_parallelism
+done
+
 wait
