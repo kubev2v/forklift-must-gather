@@ -42,7 +42,7 @@ done
 
 # Collect virt-launcher pod logs for migrated VMs (from VM's target namespace)
 for nsvm in ${target_vms[@]}; do
-  IFS="," read ns vm <<< "${nsvm}"
+  IFS="," read ns vm <<< $nsvm
   pod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
   # ^ grep pod names for VM name might not be perfect, but I haven't found any direct link
   object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
