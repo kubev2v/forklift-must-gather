@@ -120,7 +120,10 @@ fi
 if [ ! -z "${dv_resources}" ]; then
     echo "Gathering datavolumes.."
     for dv_id in ${dv_resources[@]}; do
-        dump_resource "datavolume" $dv_id $target_ns
+      dump_resource "datavolume" $dv_id $target_ns
+
+      # Store DV in list to allow importer pod logs gathering
+      echo "${target_ns},${dv_id}" >> /tmp/dvs
     done
 fi
 
