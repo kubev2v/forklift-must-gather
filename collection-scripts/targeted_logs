@@ -14,7 +14,8 @@ max_parallelism=10
 # Namespaces passed in from main gather
 namespaces=$1
 targeted_query="$(cat /tmp/targeted_logs_grep_query)"
-target_vms="$(cat /tmp/target_vms)"
+target_vms="$(touch /tmp/target_vms; cat /tmp/target_vms)"
+target_dvs="$(touch cat /tmp/dvs; cat /tmp/dvs)"
 
 # Collect all Pod logs from namespaces where Forklift is installed
 for ns in ${namespaces[@]}; do
@@ -29,13 +30,12 @@ done
 
 
 # Collect related CNV components logs: CDI and vm-import
-ns=openshift-cnv
 for component in cdi vm-import; do
-  for pod in $(/usr/bin/oc get pods --no-headers --namespace $ns | grep $component | awk '{print $1}'); do
-    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+  for pod in $(/usr/bin/oc get pods --no-headers --namespace openshift-cnv | grep $component | awk '{print $1}'); do
+    object_collection_path="/must-gather/namespaces/openshift-cnv/logs/${pod}"
     mkdir -p ${object_collection_path}
-    echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
+    echo "[ns=openshift-cnv][pod=${pod}] Collecting Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace openshift-cnv ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   done
 done
@@ -44,12 +44,32 @@ done
 for nsvm in ${target_vms[@]}; do
   IFS="," read ns vm <<< $nsvm
   pod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
-  # ^ grep pod names for VM name might not be perfect, but I haven't found any direct link
-  object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
-  mkdir -p ${object_collection_path}
-  echo "[ns=${ns}][pod=${pod}] Collecting virt-launcher Pod logs..."
-  /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
-  pwait $max_parallelism
+
+  if [[ -z $pod ]]; then
+    echo "Virt-launcher Pod for $nsvm doesn't exist, skipping."
+  else
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting virt-launcher Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    pwait $max_parallelism
+  fi
+done
+
+# Collect CDI/importer pod logs for imported DVs
+for nsdv in ${target_dvs[@]}; do
+  IFS="," read ns dv <<< $nsdv
+  pod=$(oc get pods --no-headers -n $ns --selector cdi.kubevirt.io=importer -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $dv | head -1)
+
+  if [[ -z $pod ]]; then
+    echo "Importer Pod for $nsdv doesn't exist, skipping."
+  else
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting CDI Importer Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    pwait $max_parallelism
+  fi
 done
 
 wait
