@@ -3,6 +3,8 @@
 `must-gather` is a tool built on top of [OpenShift must-gather](https://github.com/openshift/must-gather)
 that expands its capabilities to gather Forklift specific resources
 
+This branch is for Forklift v2.2.
+
 ## Usage
 ```sh
 oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest
