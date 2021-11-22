@@ -93,11 +93,10 @@ function dump_resource {
 }
 
 if [ ! -z "${plan_resources}" ]; then
-    echo "Gathering plans and their migrations.."
+    echo "Gathering plans.."
     for plan_id in ${plan_resources[@]}; do
       log_filter_query="$log_filter_query|openshift-migration\/$plan_id"
       dump_resource "plan" $plan_id $MIGRATION_NS
-      dump_resource "migration" $(echo $plan_id | sed "s/plan$/migration/") $MIGRATION_NS
     done
 fi
 
