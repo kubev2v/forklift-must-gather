@@ -109,11 +109,12 @@ if [ ! -z "${vm_resources}" ]; then
         dv_resources+=("$dv_name")
       done
     
+      target_vm_id+=($(echo $vm_data | jq -r '.metadata.labels.vmID'))
       log_filter_query="$log_filter_query|$target_vm_name"
       dump_resource "virtualmachine" $target_vm_name $target_ns
 
       # Store VM in list to allow virt-launcher pod logs gathering
-      echo "${target_ns},${target_vm_name}" >> /tmp/target_vms
+      echo "${target_ns},${target_vm_name},${target_vm_id}" >> /tmp/target_vms
     done
 fi
 
