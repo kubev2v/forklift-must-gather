@@ -40,18 +40,29 @@ for component in cdi vm-import; do
   done
 done
 
-# Collect virt-launcher pod logs for migrated VMs (from VM's target namespace)
+# Collect virt-launcher and virt-v2v pod logs for migrated VMs (from VM's target namespace)
 for nsvm in ${target_vms[@]}; do
-  IFS="," read ns vm <<< $nsvm
-  pod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
+  IFS="," read ns vm vmid <<< $nsvm
+  virtLauncherPod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
+  virtV2VPod=$(oc get pods --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
 
-  if [[ -z $pod ]]; then
+  if [[ -z $virtLauncherPod ]]; then
     echo "Virt-launcher Pod for $nsvm doesn't exist, skipping."
   else
-    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${virtLauncherPod}"
     mkdir -p ${object_collection_path}
-    echo "[ns=${ns}][pod=${pod}] Collecting virt-launcher Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    echo "[ns=${ns}][pod=${virtLauncherPod}] Collecting virt-launcher Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${virtLauncherPod} &> "${object_collection_path}/current.log" &
+    pwait $max_parallelism
+  fi
+
+  if [[ -z $virtV2VPod ]]; then
+    echo "Virt-V2V Pod for $nsvm doesn't exist, skipping."
+  else
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${virtV2VPod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${virtV2VPod}] Collecting virt-v2v Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${virtV2VPod} &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   fi
 done
