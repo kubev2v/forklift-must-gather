@@ -69,8 +69,7 @@ Log files which are empty (e.g. no content in pod log or empty result after appl
 
 ### Targeted gathering objects diagram
 
-![targeted-diagram](./targeted-diagram.svg)
-<img src="./targeted-diagram.svg">
+<img alt="diagram" src="./targeted-diagram.svg" height="400px">
 
 ### Example targeted archive structure (for PLAN=mig-plan-cold)
 
