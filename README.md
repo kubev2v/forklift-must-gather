@@ -16,7 +16,7 @@ You will get a dump of Forklift-related:
 
 ## Targeted gathering
 
-To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources. It is possible specify namespace (NS), plan (PLAN) or virtual machine name (VM). The archive will only contain CRs relevant for selected resources and filtered set of log files.
+To reduce amount of data and time consumed by must-gather, there is a "targeted" version which allows dump only selected resources. It is possible specify namespace (NS), plan (PLAN) or virtual machine name (VM). The archive will only contain CRs relevant for selected resources and filtered set of log files, see more detailed description in following section.
 
 Following targeted gathering parameters are supported:
 
@@ -39,7 +39,7 @@ VM name together with namespace where the VM belongs to
 oc adm must-gather --image=quay.io/konveyor/forklift-must-gather:latest -- NS=ns1 VM=vm-3345 /usr/bin/targeted
 ```
 
-### Gathered CRs
+### Gathered CRs detailed
 
 Custom Resource | Description, identification field | Selection process for NS | Selection process for Plan | Selection process for VM
 --- | --- | --- | --- | ---
@@ -51,8 +51,8 @@ DataVolume | Represents disk mounted to the migrated VM (```name```) | All DVs o
 
 Pods in target namespace | Description | Filtering process | Parent object | Example name
 --- | --- | --- | --- | ---
-v2v-conversion | VM conversion logs for Plan | full for given Plan | Plan | ```???```
-virt-launcher | VM launcher logs | full for given VMs or VMs from given Plan | VM | ```mig-plan-cold-vm-123```
+Virt-v2v conversion | VM conversion logs for Plan | full for given Plan | VM | ```mig-plan-cold-vm-123```
+Virt-launcher | VM launcher logs | full for given VMs or VMs from given Plan | VM | ```virt-launcher-test-2disks-for-cold-123```
 Importer | CDI Importer log | full for given Plan | DV | ```importer-mig-plan-cold-vm-123```
 
 
@@ -63,7 +63,7 @@ Pods in Forklift namespace | Description | Filtering process
 
 Pods in CDI namespace | Description | Filtering process
 --- | --- | ---
-(all) | All pods in CDI namespace | grep by Plan, VM, DV names
+(all) | All pods in CDI namespace, filtered logs of containerized disk import components | grep by Plan, VM, DV names
 
 Log files which are empty (e.g. no content in pod log or empty result after applying filter) are ommited from the must-gather archive.
 
