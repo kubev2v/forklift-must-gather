@@ -51,9 +51,9 @@ DataVolume | Represents disk mounted to the migrated VM (```name```) | All DVs o
 
 Pods in target namespace | Description | Filtering process | Parent object | Example name
 --- | --- | --- | --- | ---
-Virt-v2v conversion | VM conversion logs for Plan | full for given Plan | VM | ```mig-plan-cold-vm-123```
+Virt-v2v conversion | VM conversion logs  | full for given VMs or VMs from given Plan | VM | ```mig-plan-cold-vm-123```
 Virt-launcher | VM launcher logs | full for given VMs or VMs from given Plan | VM | ```virt-launcher-test-2disks-for-cold-123```
-Importer | CDI Importer log | full for given Plan | DV | ```importer-mig-plan-cold-vm-123```
+Importer | CDI Importer log | full for given VM's DVs | DV | ```importer-mig-plan-cold-vm-123-tkhdz```
 
 
 Pods in Forklift namespace | Description | Filtering process
@@ -64,8 +64,6 @@ Pods in Forklift namespace | Description | Filtering process
 Pods in CDI namespace | Description | Filtering process
 --- | --- | ---
 (all) | All pods in CDI namespace, filtered logs of containerized disk import components | grep by Plan, VM, DV names
-
-Log files which are empty (e.g. no content in pod log or empty result after applying filter) are ommited from the must-gather archive.
 
 ### Targeted gathering objects diagram
 
@@ -106,6 +104,10 @@ must-gather/
             └── forklift-must-gather-api-89fc7f4b6-hlwb6
                 └── current.log
 ```
+
+Some objects (pods logs or CRs) might be missing in case of failed migration. Present pods depend on the phase that was reached by the migration pipeline.
+
+Log files which are empty (e.g. no content in pod log or empty result after applying filter) are ommited from the must-gather archive.
 
 ## Development
 You can build the image locally using the Dockerfile included.
