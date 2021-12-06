@@ -107,7 +107,7 @@ must-gather/
 
 Some objects (pods logs or CRs) might be missing in case of failed migration. Present pods depend on the phase that was reached by the migration pipeline.
 
-Log files which are empty (e.g. no content in pod log or empty result after applying filter) are ommited from the must-gather archive.
+Log files which are empty (e.g. no content in pod log or empty result after applying filter) are omitted from the must-gather archive.
 
 ## Development
 You can build the image locally using the Dockerfile included.
