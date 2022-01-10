@@ -103,18 +103,23 @@ fi
 if [ ! -z "${vm_resources}" ]; then
     echo "Gathering virtualmachines.."
     for target_vm_name in ${vm_resources[@]}; do
-      # Parse VM for related resources
-      vm_data=$(/usr/bin/oc get virtualmachine ${target_vm_name} -n ${target_ns} -o json)
-      for dv_name in $(echo $vm_data | jq -r '.spec.template.spec.volumes[] .dataVolume.name'); do
-        dv_resources+=("$dv_name")
-      done
-    
-      target_vm_id=($(echo $vm_data | jq -r '.metadata.labels.vmID'))
-      log_filter_query="$log_filter_query|$target_vm_name"
-      dump_resource "virtualmachine" $target_vm_name $target_ns
+      # Check if the VM exists first
+      if [ $(/usr/bin/oc get virtualmachine ${target_vm_name} -n ${target_ns} | grep ${target_vm_name} | wc -l) == "1" ]; then
+        # Parse VM for related resources
+        vm_data=$(/usr/bin/oc get virtualmachine ${target_vm_name} -n ${target_ns} -o json)
+        for dv_name in $(echo $vm_data | jq -r '.spec.template.spec.volumes[] .dataVolume.name'); do
+          dv_resources+=("$dv_name")
+        done
 
-      # Store VM in list to allow virt-launcher pod logs gathering
-      echo "${target_ns},${target_vm_name},${target_vm_id}" >> /tmp/target_vms
+        target_vm_id=($(echo $vm_data | jq -r '.metadata.labels.vmID'))
+        log_filter_query="$log_filter_query|$target_vm_name"
+        dump_resource "virtualmachine" $target_vm_name $target_ns
+
+        # Store VM in list to allow virt-launcher pod logs gathering
+        echo "${target_ns},${target_vm_name},${target_vm_id}" >> /tmp/target_vms
+      else
+        echo "VirtualMachine ${target_vm_name} doesn't exist in ${target_ns} namespace, skipping."
+      fi
     done
 fi
 
