@@ -55,6 +55,8 @@ Virt-v2v conversion | VM conversion logs  | full for given VMs or VMs from given
 Virt-launcher | VM launcher logs | full for given VMs or VMs from given Plan | VM | ```virt-launcher-test-2disks-for-cold-123```
 Importer | CDI Importer log | full for given VM's DVs | DV | ```importer-mig-plan-cold-vm-123-tkhdz```
 
+Virt-v2v conversion pod is identified by vmID label (the vmID label is applied on VM, DV too).
+Virt-launcher and CDI Importer pods are chosen by naming convention since labels are missing to pods created outside of Forklift component.
 
 Pods in Forklift namespace | Description | Filtering process
 --- | --- | ---
