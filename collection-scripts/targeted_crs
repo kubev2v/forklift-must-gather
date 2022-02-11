@@ -22,6 +22,7 @@ MIGRATION_NS=$1
 dv_resources=()
 plan_resources=()
 vm_resources=()
+present_vm_resources=()
 target_ns=""
 log_filter_query=""
 
@@ -114,6 +115,7 @@ if [ ! -z "${vm_resources}" ]; then
         target_vm_id=($(echo $vm_data | jq -r '.metadata.labels.vmID'))
         log_filter_query="$log_filter_query|$target_vm_name"
         dump_resource "virtualmachine" $target_vm_name $target_ns
+        present_vm_resources+=("$target_vm_name")
 
         # Store VM in list to allow virt-launcher pod logs gathering
         echo "${target_ns},${target_vm_name},${target_vm_id}" >> /tmp/target_vms
@@ -133,9 +135,15 @@ if [ ! -z "${dv_resources}" ]; then
     done
 fi
 
-# Show message in case of empty result
+# Show message in case of empty result of requested/parsed resources
 if [ -z $plan_resources ] && [ -z $vm_resources ] && [ -z $dv_resources ]; then
   echo "ERROR: No resources matching the criteria were found. Try adjust NS, PLAN or VM env variables."
+  exit 1
+fi
+
+# Show message for zero valid VMs without Plan of resources actually existing in the cluster
+if [ -z $plan_resources ] && [ -z $present_vm_resources ]; then
+  echo "ERROR: No existing VMs were found in the cluster."
   exit 1
 fi
 
