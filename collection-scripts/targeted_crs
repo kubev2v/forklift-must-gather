@@ -111,10 +111,10 @@ if [ ! -z "${vm_resources}" ]; then
 
         # Gather VMs DataVolumes
         for dv_name in $(echo $vm_data | jq -r '.spec.template.spec.volumes[] .dataVolume.name'); do
-          dump_resource "datavolume" $dv_id $target_ns
+          dump_resource "datavolume" $dv_name $target_ns
 
           # Store DV in list to allow importer pod logs gathering
-          echo "${target_ns},${dv_id}" >> /tmp/dvs
+          echo "${target_ns},${dv_name}" >> /tmp/dvs
         done
 
         target_vm_id=($(echo $vm_data | jq -r '.metadata.labels.vmID'))
