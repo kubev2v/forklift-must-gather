@@ -16,7 +16,7 @@ namespaces=$1
 targeted_query="$(cat /tmp/targeted_logs_grep_query)"
 target_vms="$(touch /tmp/target_vms; cat /tmp/target_vms)"
 target_dvs="$(touch cat /tmp/dvs; cat /tmp/dvs)"
-target_jobs="$(touch cat /tmp/jobs; cat /tmp/jobs)"
+target_job_pods="$(touch cat /tmp/job_pods; cat /tmp/job_pods)"
 
 # Collect all Pod logs from namespaces where Forklift is installed
 for ns in ${namespaces[@]}; do
@@ -85,12 +85,12 @@ for nsdv in ${target_dvs[@]}; do
 done
 
 # Collect migration hook jobs logs
-for nsjob in ${target_jobs[@]}; do
-  IFS="," read ns job_name <<< $nsjob
-  object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+for nsjobpod in ${target_job_pods[@]}; do
+  IFS="," read ns job_pod <<< $nsjobpod
+  object_collection_path="/must-gather/namespaces/${ns}/logs/${job_pod}"
   mkdir -p ${object_collection_path}
-  echo "[ns=${ns}][job=${pod}] Collecting migration hook job logs..."
-  /usr/bin/oc logs --namespace ${ns} ${job_name} &> "${object_collection_path}/current.log" &
+  echo "[ns=${ns}][job=${job_pod}] Collecting migration hook job's pod logs..."
+  /usr/bin/oc logs --namespace ${ns} ${job_pod} &> "${object_collection_path}/current.log" &
   pwait $max_parallelism
 done
 

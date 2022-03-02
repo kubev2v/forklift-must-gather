@@ -123,9 +123,10 @@ if [ ! -z "${vm_resources}" ]; then
         present_vm_resources+=("$target_vm_name")
 
         # Gather VM hook jobs if present
-        for job_name in $(oc get jobs --no-headers -n $MIGRATION_NS --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'); do
+        for job_name in $(/usr/bin/oc get jobs --no-headers -n $MIGRATION_NS --selector vmID=$target_vm_id -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'); do
           dump_resource "job" $job_name $MIGRATION_NS
-          echo "${MIGRATION_NS},${job_name}" >> /tmp/jobs
+          job_pod_name=$(/usr/bin/oc get pods --no-headers -n $MIGRATION_NS --selector job-name=$job_name -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+          echo "${MIGRATION_NS},${job_pod_name}" >> /tmp/job_pods
         done
 
         # Store VM in list to allow virt-launcher pod logs gathering
