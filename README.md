@@ -46,6 +46,7 @@ Custom Resource | Description, identification field | Selection process for NS |
 Plan | Defines VM, storage and network mapping (```name```) | All Plans with targetNamespace=$NS | Plan with name=$PLAN | -
 VirtualMachine | Represents target migrated VM (```name```) | All VMs from all Plans with targetNamespace=$NS | All VMs from given Plan | VM with name=$VM
 DataVolume | Represents disk mounted to the migrated VM (```name```) | All DVs of all VMs from all Plans with targetNamespace=$NS | All DVs of all VMs from given Plan | All DVs of given VM
+Job* | Represents pre-migration or post-migration Hook (```vmID```) | All Jobs of all VMs from all Plans with targetNamespace=$NS | All Jobs of all VMs from given Plan | All Jobs of given VM
 
 ### Gathered Pod logs
 
@@ -54,9 +55,12 @@ Pods in target namespace | Description | Filtering process | Parent object | Exa
 Virt-v2v conversion | VM conversion logs  | full for given VMs or VMs from given Plan | VM | ```mig-plan-cold-vm-123```
 Virt-launcher | VM launcher logs | full for given VMs or VMs from given Plan | VM | ```virt-launcher-test-2disks-for-cold-123```
 Importer | CDI Importer log | full for given VM's DVs | DV | ```importer-mig-plan-cold-vm-123-tkhdz```
+Hook Job* | Hook job pods log | full for given VM's Job | Job | ```mig-plan-cold-vm-123-posthook-abc```
 
-Virt-v2v conversion pod is identified by vmID label and the pod name that should contain vmID (the vmID label is applied on VM, DV too).
+Virt-v2v conversion and hook job pods are identified by vmID label and the pod name that should contain vmID (the vmID label is applied on VM, DV too).
 Virt-launcher and CDI Importer pods are chosen by naming convention since labels are missing to pods created outside of Forklift component.
+
+\* is optional
 
 Pods in Forklift namespace | Description | Filtering process
 --- | --- | ---
@@ -107,7 +111,7 @@ must-gather/
                 └── current.log
 ```
 
-Some objects (pods logs or CRs) might be missing in case of failed migration. Present pods depend on the phase that was reached by the migration pipeline.
+Some objects (pods logs or CRs) might be missing in case of failed migration or are optional like migration Hook Jobs. Present pods depend on the phase that was reached by the migration pipeline.
 
 Log files which are empty (e.g. no content in pod log or empty result after applying filter) are omitted from the must-gather archive.
 
