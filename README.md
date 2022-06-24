@@ -1,5 +1,7 @@
 # Forklift must-gather
 
+[![Must-gather Repository on Quay](https://quay.io/repository/konveyor/forklift-must-gather/status "Must-gather Repository on Quay")](https://quay.io/repository/konveyor/forklift-must-gather) [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/konveyor/forklift-must-gather/pulls)
+
 `must-gather` is a tool built on top of [OpenShift must-gather](https://github.com/openshift/must-gather)
 that expands its capabilities to gather Forklift specific resources
 
