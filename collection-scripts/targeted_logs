@@ -45,7 +45,7 @@ done
 for nsvm in ${target_vms[@]}; do
   IFS="," read ns vm vmid <<< $nsvm
   virtLauncherPod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
-  virtV2VPod=$(oc get pods --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vmid | head -1)
+  virtV2VPod=$(oc get pods --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
 
   if [[ -z $virtLauncherPod ]]; then
     echo "Virt-launcher Pod for $nsvm doesn't exist, skipping."
