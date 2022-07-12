@@ -64,7 +64,7 @@ if [ ! -z $VM ]; then
   vm_resources+=("$VM")
   if [ -z "${target_ns}" ]; then
     # Try to identify a namespace for provided VM name
-    vm_list=$(oc get virtualmachines -A | grep ${VM})
+    vm_list=$(oc get virtualmachines -A | grep -w ${VM})
     if [ $(echo "$vm_list" | wc -l) == "1" ]; then
       target_ns=$(echo "$vm_list" | cut -f1 -d" ")
     else
