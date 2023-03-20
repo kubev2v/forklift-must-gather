@@ -68,6 +68,24 @@ for nsvm in ${target_vms[@]}; do
   fi
 done
 
+# Collect populator pod logs
+for nsvm in ${target_vms[@]}; do
+  IFS="," read ns vmid <<< $nsvm
+  # The ovvps and pvc use the same ID
+  ovvps=$(oc get ovvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+  osvps=$(oc get osvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+  pod=$(oc get pods --no-headers -n $ns --selector "pvc in ($ovvps, $osvps)" -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
+  if [[ -z $pod ]]; then
+    echo "Populator Pod for $nsvm doesn't exist, skipping."
+  else
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting Populator Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    pwait $max_parallelism
+  fi
+done
+
 # Collect CDI/importer pod logs for imported DVs
 for nsdv in ${target_dvs[@]}; do
   IFS="," read ns dv <<< $nsdv
