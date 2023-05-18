@@ -46,6 +46,8 @@ for nsvm in ${target_vms[@]}; do
   IFS="," read ns vm vmid <<< $nsvm
   virtLauncherPod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
   virtV2VPod=$(oc get pods --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
+  ovvps=$(oc get ovvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+  osvps=$(oc get osvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 
   if [[ -z $virtLauncherPod ]]; then
     echo "Virt-launcher Pod for $nsvm doesn't exist, skipping."
@@ -66,24 +68,19 @@ for nsvm in ${target_vms[@]}; do
     /usr/bin/oc logs --all-containers --namespace ${ns} ${virtV2VPod} &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   fi
-done
 
-# Collect populator pod logs
-for nsvm in ${target_vms[@]}; do
-  IFS="," read ns vmid <<< $nsvm
-  # The ovvps and pvc use the same ID
-  ovvps=$(oc get ovvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-  osvps=$(oc get osvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-  pod=$(oc get pods --no-headers -n $ns --selector "pvc in ($ovvps, $osvps)" -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
-  if [[ -z $pod ]]; then
-    echo "Populator Pod for $nsvm doesn't exist, skipping."
-  else
-    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
-    mkdir -p ${object_collection_path}
-    echo "[ns=${ns}][pod=${pod}] Collecting Populator Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
-    pwait $max_parallelism
-  fi
+  for pvc in $ovvps $osvps; do
+    populatorPod=$(oc get pods --no-headers -n $ns --selector pvcName=$pvc -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
+    if [[ -z $populatorPod ]]; then
+      echo "Populator Pod for $nsvm doesn't exist, skipping."
+    else
+      object_collection_path="/must-gather/namespaces/${ns}/logs/${populatorPod}"
+      mkdir -p ${object_collection_path}
+      echo "[ns=${ns}][pod=${populatorPod}] Collecting Populator Pod logs..."
+      /usr/bin/oc logs --all-containers --namespace ${ns} ${populatorPod} &> "${object_collection_path}/current.log" &
+      pwait $max_parallelism
+    fi
+  done
 done
 
 # Collect CDI/importer pod logs for imported DVs
