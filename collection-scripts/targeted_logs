@@ -15,8 +15,9 @@ max_parallelism=10
 namespaces=$1
 targeted_query="$(cat /tmp/targeted_logs_grep_query)"
 target_vms="$(touch /tmp/target_vms; cat /tmp/target_vms)"
-target_dvs="$(touch cat /tmp/dvs; cat /tmp/dvs)"
-target_job_pods="$(touch cat /tmp/job_pods; cat /tmp/job_pods)"
+target_dvs="$(touch /tmp/dvs; cat /tmp/dvs)"
+target_job_pods="$(touch /tmp/job_pods; cat /tmp/job_pods)"
+target_migrations="$(touch /tmp/migrations; cat /tmp/migrations)"
 
 # Collect all Pod logs from namespaces where Forklift is installed
 for ns in ${namespaces[@]}; do
@@ -46,8 +47,6 @@ for nsvm in ${target_vms[@]}; do
   IFS="," read ns vm vmid <<< $nsvm
   virtLauncherPod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
   virtV2VPod=$(oc get pods --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
-  ovvps=$(oc get ovvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
-  osvps=$(oc get osvps --no-headers -n $ns --selector vmID=$vmid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 
   if [[ -z $virtLauncherPod ]]; then
     echo "Virt-launcher Pod for $nsvm doesn't exist, skipping."
@@ -69,8 +68,9 @@ for nsvm in ${target_vms[@]}; do
     pwait $max_parallelism
   fi
 
-  for pvc in $ovvps $osvps; do
-    populatorPod=$(oc get pods --no-headers -n $ns --selector pvcName=$pvc -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
+  for migration in ${target_migrations[@]}; do
+    read migration_id <<< $migration
+    populatorPod=$(oc get pods --no-headers -n $ns --selector migration=$migration_id -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
     if [[ -z $populatorPod ]]; then
       echo "Populator Pod for $nsvm doesn't exist, skipping."
     else

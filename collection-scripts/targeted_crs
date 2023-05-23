@@ -55,6 +55,10 @@ if [ ! -z $PLAN ]; then
     plan_resources+=("$PLAN")
     vm_resources+=($(echo $plan_data | jq -r '.status.migration.vms[] .name'))
     target_ns=$(echo $plan_data | jq -r '.spec.targetNamespace')
+    migration_ids=$(echo $plan_data | jq -r '.status.migration.history[].migration .uid')
+    log_filter_query="$log_filter_query|$migration_ids"
+    # Store the migration id to allow populator pod logs gathering
+    echo "${migration_ids}" >> /tmp/migrations
   fi
 fi
 
@@ -115,6 +119,15 @@ if [ ! -z "${vm_resources}" ]; then
 
           # Store DV in list to allow importer pod logs gathering
           echo "${target_ns},${dv_name}" >> /tmp/dvs
+        done
+
+        # Gather VMs PersistentVolumeClaims
+        for pvc_name in $(echo $vm_data | jq -r '.spec.template.spec.volumes[] .persistentVolumeClaim.claimName'); do
+          log_filter_query="$log_filter_query|$pvc_name"
+          dump_resource "persistentvolumeclaim" $pvc_name $target_ns
+
+          # Store PVC in list to allow populator pod logs gathering
+          echo "${target_ns},${pvc_name}" >> /tmp/pvcs
         done
 
         target_vm_id=($(echo $vm_data | jq -r '.metadata.labels.vmID'))
