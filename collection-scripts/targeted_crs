@@ -55,10 +55,6 @@ if [ ! -z $PLAN ]; then
     plan_resources+=("$PLAN")
     vm_resources+=($(echo $plan_data | jq -r '.status.migration.vms[] .name'))
     target_ns=$(echo $plan_data | jq -r '.spec.targetNamespace')
-    migration_ids=$(echo $plan_data | jq -r '.status.migration.history[].migration .uid')
-    log_filter_query="$log_filter_query|$migration_ids"
-    # Store the migration id to allow populator pod logs gathering
-    echo "${migration_ids}" >> /tmp/migrations
   fi
 fi
 
@@ -134,6 +130,11 @@ if [ ! -z "${vm_resources}" ]; then
         log_filter_query="$log_filter_query|$target_vm_name"
         dump_resource "virtualmachine" $target_vm_name $target_ns
         present_vm_resources+=("$target_vm_name")
+
+        migration_id=($(echo $vm_data | jq -r '.metadata.labels.migration'))
+        log_filter_query="$log_filter_query|$migration_id"
+        # Store the migration id to allow populator pod logs gathering
+        echo ${migration_id} >> /tmp/migrations
 
         # Gather VM hook jobs if present
         for job_name in $(/usr/bin/oc get jobs --no-headers -n $MIGRATION_NS --selector vmID=$target_vm_id -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'); do
