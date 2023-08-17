@@ -16,6 +16,7 @@ namespaces=$1
 targeted_query="$(cat /tmp/targeted_logs_grep_query)"
 target_vms="$(touch /tmp/target_vms; cat /tmp/target_vms)"
 target_dvs="$(touch /tmp/dvs; cat /tmp/dvs)"
+target_pvcs="$(touch /tmp/pvcs; cat /tmp/pvcs)"
 target_job_pods="$(touch /tmp/job_pods; cat /tmp/job_pods)"
 target_migrations="$(touch /tmp/migrations; cat /tmp/migrations)"
 
@@ -84,7 +85,7 @@ for nsvm in ${target_vms[@]}; do
 done
 
 # Collect CDI/importer pod logs for imported DVs
-for nsdv in ${target_dvs[@]}; do
+for nsdv in ${target_dvs[@]} ${target_pvcs[@]}; do
   IFS="," read ns dv <<< $nsdv
   pod=$(oc get pods --no-headers -n $ns --selector cdi.kubevirt.io=importer -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $dv | head -1)
 
