@@ -85,12 +85,34 @@ for nsvm in ${target_vms[@]}; do
 done
 
 # Collect CDI/importer pod logs for imported DVs
-for nsdv in ${target_dvs[@]} ${target_pvcs[@]}; do
+for nsdv in ${target_dvs[@]}; do
   IFS="," read ns dv <<< $nsdv
   pod=$(oc get pods --no-headers -n $ns --selector cdi.kubevirt.io=importer -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $dv | head -1)
 
   if [[ -z $pod ]]; then
     echo "Importer Pod for $nsdv doesn't exist, skipping."
+  else
+    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${ns}][pod=${pod}] Collecting CDI Importer Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    pwait $max_parallelism
+  fi
+done
+
+# Collect CDI/importer pod logs for imported PVCs
+for nspvc in ${target_pvcs[@]}; do
+  IFS="," read ns pvc <<< $nspvc
+
+  pvc_yaml=$(cat "/must-gather/namespaces/${ns}/crs/persistentvolumeclaim/${pvc}.yaml")
+  has_cdi=$(echo $pvc_yaml | grep "app: containerized-data-importer")
+  if [[ -z $has_cdi ]]; then
+    continue
+  fi
+
+  pod=$(oc get pods --no-headers -n $ns --selector cdi.kubevirt.io=importer -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $pvc | head -1)
+  if [[ -z $pod ]]; then
+    echo "Importer Pod for $nspvc doesn't exist, skipping."
   else
     object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
     mkdir -p ${object_collection_path}
