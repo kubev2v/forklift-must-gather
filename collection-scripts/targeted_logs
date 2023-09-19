@@ -110,15 +110,17 @@ for nspvc in ${target_pvcs[@]}; do
     continue
   fi
 
-  pod=$(oc get pods --no-headers -n $ns --selector cdi.kubevirt.io=importer -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $pvc | head -1)
-  if [[ -z $pod ]]; then
+  pods=$(oc get pods --no-headers -n $ns --selector cdi.kubevirt.io=importer -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $pvc)
+  if [[ -z $pods ]]; then
     echo "Importer Pod for $nspvc doesn't exist, skipping."
   else
-    object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
-    mkdir -p ${object_collection_path}
-    echo "[ns=${ns}][pod=${pod}] Collecting CDI Importer Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
-    pwait $max_parallelism
+    for pod in ${pods[@]}; do
+      object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
+      mkdir -p ${object_collection_path}
+      echo "[ns=${ns}][pod=${pod}] Collecting CDI Importer Pod logs..."
+      /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+      pwait $max_parallelism
+    done
   fi
 done
 
