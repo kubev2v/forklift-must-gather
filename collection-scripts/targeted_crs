@@ -119,14 +119,25 @@ if [ ! -z "${vm_resources}" ]; then
 
         # Gather VMs PersistentVolumeClaims
         for pvc_name in $(echo $vm_data | jq -r '.spec.template.spec.volumes[] .persistentVolumeClaim.claimName'); do
-          # In order to gather the scratch PVCs in warm migrations
-          for pvc in $(/usr/bin/oc get pvc -n ${target_ns} -o json | jq -c '.items | .[]'); do
-            if [ $(echo $pvc | jq -r '.spec.volumeName') != $pvc_name ]; then
+          pvc_infos=$(/usr/bin/oc get pvc -n ${target_ns} -o json | jq -c '.items | .[] | {name: .metadata.name, volumeName: .spec.volumeName}')
+          pop_volume_name=""
+          for pvc_info in ${pvc_infos[@]}; do
+            # When a disk is populated using a volume populator, the PVC's spec.volumeName is different from
+            # pvc_name and we'll have another PVC (prime PVC) that has the same value of spec.volumeName
+            if [ $(echo "$pvc_info" | jq -r '.name') = "$pvc_name" ]; then
+              pop_volume_name=$(echo $pvc_info | jq -r '.volumeName')
+            fi
+          done
+          for pvc_info in ${pvc_infos[@]}; do
+            volume_name=$(echo $pvc_info | jq -r '.volumeName')
+            # In order to gather the scratch PVCs in warm migrations $volume_name == $pvc_name
+            # As for populator PVCs we check $volume_name == $pop_volume_name
+            if [ "$volume_name" != "$pvc_name" ] && [ "$volume_name" != "$pop_volume_name" ]; then
               continue
             fi
-            name=$(echo $pvc | jq -r 'metadata.name')
-            log_filter_query="$log_filter_query|name"
-            dump_resource "persistentvolumeclaim" name $target_ns
+            name=$(echo $pvc_info | jq -r '.name')
+            log_filter_query="$log_filter_query|$name"
+            dump_resource "persistentvolumeclaim" $name $target_ns
 
             # Store PVC in list to allow populator pod logs gathering
             echo "${target_ns},${name}" >> /tmp/pvcs
