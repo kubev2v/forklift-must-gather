@@ -1,6 +1,6 @@
 IMAGE_REGISTRY ?= quay.io
 IMAGE_TAG ?= latest
-IMAGE_NAME ?= kubev2v/forklift-must-gather
+IMAGE_NAME ?= konveyor/forklift-must-gather
 CONTAINER_ENGINE ?= $(shell if [ -e /usr/bin/podman ]; then echo "/usr/bin/podman"; else echo "docker"; fi)
 
 PROMETHEUS_LOCAL_DATA_DIR ?= /tmp/mig-prometheus-data-dump
