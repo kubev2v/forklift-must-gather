@@ -27,6 +27,8 @@ spec:
     value: Dockerfile
   - name: path-context
     value: .
+  - name: build-source-image
+    value: "true"
   pipelineSpec:
     finally:
     - name: show-sbom
