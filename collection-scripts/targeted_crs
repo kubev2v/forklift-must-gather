@@ -23,7 +23,7 @@ dv_resources=()
 plan_resources=()
 vm_resources=()
 present_vm_resources=()
-target_ns=""
+target_ns=$MIGRATION_NS
 log_filter_query=""
 
 # Parse provided parameters
@@ -39,18 +39,19 @@ if [ ! -z $NS ]; then
     echo "ERROR: Specified NS doesn't exist, targeted gathering cannot continue. Set NS to an existing namespace."
     exit 1
   fi
+  target_ns=$NS
   # Populate NS resources only if PLAN and VM parameters were not provided
   if [[ -z $PLAN && -z $VM ]]; then
-    plans_data=$(/usr/bin/oc get plans -n $MIGRATION_NS -o json)
-    plan_resources+=($(echo $plans_data | jq -r ".items[]|select(.spec.targetNamespace==\"$NS\")|.metadata.name"))
-    vm_resources+=($(echo $plans_data | jq -r ".items[]|select(.spec.targetNamespace==\"$NS\")|.status.migration.vms[] .name"))
+    plans_data=$(/usr/bin/oc get plans -n $target_ns -o json)
+    plan_resources+=($(echo $plans_data | jq -r ".items[]|select(.spec.targetNamespace==\"$target_ns\")|.metadata.name"))
+    # If the "vms" is empty, this line will cause a non-blocking error, this is expected and does not cause issues, however it is not very nice and should be fixed.
+    vm_resources+=($(echo $plans_data | jq -r ".items[]|select(.spec.targetNamespace==\"$target_ns\")|.status.migration.vms[] .name"))
   fi
-  target_ns=$NS
 fi
 
 if [ ! -z $PLAN ]; then
   echo "Targeted gathering for Plan: $PLAN"
-  plan_data=$(/usr/bin/oc get plan $PLAN -n $MIGRATION_NS -o json)
+  plan_data=$(/usr/bin/oc get plan $PLAN -n $target_ns -o json)
   if [ ! -z "${plan_data}" ]; then
     plan_resources+=("$PLAN")
     vm_resources+=($(echo $plan_data | jq -r '.status.migration.vms[] .name'))
@@ -97,7 +98,7 @@ if [ ! -z "${plan_resources}" ]; then
     echo "Gathering plans.."
     for plan_id in ${plan_resources[@]}; do
       log_filter_query="$log_filter_query|openshift-migration\/$plan_id"
-      dump_resource "plan" $plan_id $MIGRATION_NS
+      dump_resource "plan" $plan_id $target_ns
     done
 fi
 
