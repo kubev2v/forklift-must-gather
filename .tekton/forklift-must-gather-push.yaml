@@ -26,11 +26,13 @@ spec:
   - name: output-image
     value: quay.io/redhat-user-workloads/rh-mtv-1-tenant/forklift-operator/forklift-must-gather:{{revision}}
   - name: dockerfile
-    value: Dockerfile
+    value: Dockerfile-downstream
   - name: path-context
     value: .
   - name: build-source-image
     value: "true"
+  - name: prefetch-input
+    value: '[{"type": "rpm", "path": "."}]'
   pipelineSpec:
     finally:
     - name: show-sbom
@@ -75,7 +77,7 @@ spec:
       description: Skip checks against built image
       name: skip-checks
       type: string
-    - default: "false"
+    - default: "true"
       description: Execute the build with network isolation
       name: hermetic
       type: string
@@ -173,6 +175,10 @@ spec:
         value: $(params.output-image).prefetch
       - name: ociArtifactExpiresAfter
         value: $(params.image-expires-after)
+      - name: dev-package-managers
+        value: "true"
+      - name: ACTIVATION_KEY
+        value: activation-key-rhel8
       runAfter:
       - clone-repository
       taskRef:

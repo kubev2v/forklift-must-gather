@@ -1,0 +1,12 @@
+packages:
+  - findutils
+  - graphviz
+  - jq
+  - rsync
+  - tar
+contentOrigin:
+  repofiles: ["./redhat.repo"]
+context:
+  containerfile:
+    file: ./Dockerfile-downstream
+arches: [x86_64]
