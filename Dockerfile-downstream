@@ -21,4 +21,5 @@ LABEL \
     io.k8s.description="Migration Toolkit for Virtualization - Must Gather" \
     io.openshift.tags="migration,mtv,forklift" \
     summary="Migration Toolkit for Virtualization - Must Gather" \
+    description="Migration Toolkit for Virtualization - Must Gather" \
     maintainer="Migration Toolkit for Virtualization Team <migtoolkit-virt@redhat.com>"
