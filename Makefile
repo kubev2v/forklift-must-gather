@@ -10,7 +10,7 @@ PROMETHEUS_DUMP_PATH ?= $(shell find ./must-gather.local* -name prom_data.tar.gz
 build: docker-build docker-push
 
 docker-build:
-	${CONTAINER_ENGINE} build -t ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
+	${CONTAINER_ENGINE} build -f build/Dockerfile -t ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
 
 docker-push:
 	${CONTAINER_ENGINE} push ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
