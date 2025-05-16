@@ -8,5 +8,5 @@ contentOrigin:
   repofiles: ["./redhat.repo"]
 context:
   containerfile:
-    file: ./Dockerfile-downstream
+    file: build/Dockerfile-downstream
 arches: [x86_64]
