@@ -10,6 +10,9 @@ COPY collection-scripts/* /usr/bin/
 
 ENTRYPOINT ["/usr/bin/gather"]
 
+ARG VERSION
+ARG REGISTRY
+
 LABEL \
     com.redhat.component="mtv-must-gather-container" \
     version="$VERSION" \
