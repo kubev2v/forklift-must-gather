@@ -12,6 +12,7 @@ ENTRYPOINT ["/usr/bin/gather"]
 
 ARG VERSION
 ARG REGISTRY
+ARG REVISION
 
 LABEL \
     com.redhat.component="mtv-must-gather-container" \
@@ -23,4 +24,5 @@ LABEL \
     io.openshift.tags="migration,mtv,forklift" \
     summary="Migration Toolkit for Virtualization - Must Gather" \
     description="Migration Toolkit for Virtualization - Must Gather" \
-    maintainer="Migration Toolkit for Virtualization Team <migtoolkit-virt@redhat.com>"
+    maintainer="Migration Toolkit for Virtualization Team <migtoolkit-virt@redhat.com>" \
+    revision="$REVISION"
