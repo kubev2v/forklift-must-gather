@@ -1,0 +1,624 @@
+---
+lockfileVersion: 1
+lockfileVendor: redhat
+arches:
+- arch: x86_64
+  packages:
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/a/adobe-mappings-cmap-20171205-3.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 2190676
+    checksum: sha256:b913dcb5879c7ecc6b3276968770e3270029a60b1563a406a192c3db5d969b8c
+    name: adobe-mappings-cmap
+    evr: 20171205-3.el8
+    sourcerpm: adobe-mappings-cmap-20171205-3.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/a/adobe-mappings-cmap-deprecated-20171205-3.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 121404
+    checksum: sha256:086f68918adfc0ee63a1f3cb22394d5aaf159e6aee2903ce693c0296b3721096
+    name: adobe-mappings-cmap-deprecated
+    evr: 20171205-3.el8
+    sourcerpm: adobe-mappings-cmap-20171205-3.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/a/adobe-mappings-pdf-20180407-1.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 723620
+    checksum: sha256:b6cc9474c830cf8059b3a60dde46416d2ece114835c8d2a22ef609dbc2974420
+    name: adobe-mappings-pdf
+    evr: 20180407-1.el8
+    sourcerpm: adobe-mappings-pdf-20180407-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/a/atk-2.28.1-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 278108
+    checksum: sha256:5072ec9c8d2d33c8b897cf436040c566d70ac3aa65fe67975992e765fca10e80
+    name: atk
+    evr: 2.28.1-1.el8
+    sourcerpm: atk-2.28.1-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/c/cairo-1.15.12-6.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 735920
+    checksum: sha256:8395c703800c9261454792650649c7df35a6af34b8f254fc4e0bf4c0459d2aa7
+    name: cairo
+    evr: 1.15.12-6.el8
+    sourcerpm: cairo-1.15.12-6.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/f/fribidi-1.0.4-9.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 91588
+    checksum: sha256:576f8635aba31c4b3a54d99ddc918b0d74cff18c6f6125d341607f80618c9d9a
+    name: fribidi
+    evr: 1.0.4-9.el8
+    sourcerpm: fribidi-1.0.4-9.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/g/gd-2.2.5-7.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 147292
+    checksum: sha256:4543ee6b844b0d2414e684c0972d1129ad168774c7e990bf15d98a91a487c8ef
+    name: gd
+    evr: 2.2.5-7.el8
+    sourcerpm: gd-2.2.5-7.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/g/gdk-pixbuf2-modules-2.36.12-6.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 111460
+    checksum: sha256:ac7fdd4cee4c3fd59787f59c5bf273e2c1c4a1884259ef03feaa9faeb7da4959
+    name: gdk-pixbuf2-modules
+    evr: 2.36.12-6.el8_10
+    sourcerpm: gdk-pixbuf2-2.36.12-6.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/g/google-droid-sans-fonts-20120715-13.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 2603348
+    checksum: sha256:6e9953f840cafb8811043b7ebf88c6670eb24e652011bdbe2bf2bc416f4a702e
+    name: google-droid-sans-fonts
+    evr: 20120715-13.el8
+    sourcerpm: google-droid-fonts-20120715-13.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/g/graphite2-1.3.10-10.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 124536
+    checksum: sha256:2917eaeca5b9b33ab21feb85ed331e0d09704e0930d70c04ca50883a97e4a61f
+    name: graphite2
+    evr: 1.3.10-10.el8
+    sourcerpm: graphite2-1.3.10-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/g/graphviz-2.40.1-45.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 1923956
+    checksum: sha256:73de49d0c2b9421f5945c7b5f68ccbd880cad6d18f9eaf5550e1d98b4e8b6718
+    name: graphviz
+    evr: 2.40.1-45.el8
+    sourcerpm: graphviz-2.40.1-45.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/g/gtk-update-icon-cache-3.22.30-12.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 33096
+    checksum: sha256:a95186b16a53a4706f3a84476a9f0ab547c2f36f99fa1a9b1fa66455b14c426a
+    name: gtk-update-icon-cache
+    evr: 3.22.30-12.el8_10
+    sourcerpm: gtk3-3.22.30-12.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/g/gtk2-2.24.32-5.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 3616452
+    checksum: sha256:8a994138b4d4bbcc5663ba464b85c9a9a0112bf9bad7e1ac3302559b69e7fa55
+    name: gtk2
+    evr: 2.24.32-5.el8
+    sourcerpm: gtk2-2.24.32-5.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/h/harfbuzz-1.7.5-4.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 302876
+    checksum: sha256:90a04d6a0c81f6d7f311a7dccba1b0d146f5db315e49d304f76f4e2fc768e0c2
+    name: harfbuzz
+    evr: 1.7.5-4.el8
+    sourcerpm: harfbuzz-1.7.5-4.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/h/hicolor-icon-theme-0.17-2.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 49600
+    checksum: sha256:66bab4d22c2d9f29dc7c7651afa44456e306c6c9c175f96f5021b1887d9a5796
+    name: hicolor-icon-theme
+    evr: 0.17-2.el8
+    sourcerpm: hicolor-icon-theme-0.17-2.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/j/jasper-libs-2.0.14-6.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 170656
+    checksum: sha256:712c2679d8acc76f2d7492dc2fc796ba5b409026f4b95d4fb85bebc52981c445
+    name: jasper-libs
+    evr: 2.0.14-6.el8_10
+    sourcerpm: jasper-2.0.14-6.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/j/jbig2dec-libs-0.16-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 73256
+    checksum: sha256:34d5715d9c2f4c6cc8295512789c72c551df8c3c4c38d41581ace16b90c73d36
+    name: jbig2dec-libs
+    evr: 0.16-1.el8
+    sourcerpm: jbig2dec-0.16-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/j/jbigkit-libs-2.1-14.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 55980
+    checksum: sha256:5a55a840cccc45aef19b261cfff264420d28fcb31351b57da85d067fda73d7b7
+    name: jbigkit-libs
+    evr: 2.1-14.el8
+    sourcerpm: jbigkit-2.1-14.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/j/jq-1.6-9.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 207896
+    checksum: sha256:baaa3660d87c4f3c12776e051b7f13835fee8918389a57673519e3389eb7aa3b
+    name: jq
+    evr: 1.6-9.el8_10
+    sourcerpm: jq-1.6-9.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/lcms2-2.9-2.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 168568
+    checksum: sha256:7f2796df5a80f13ea11b3988175cc34cc2964d411480114c6c94671f054adf43
+    name: lcms2
+    evr: 2.9-2.el8
+    sourcerpm: lcms2-2.9-2.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libICE-1.0.9-15.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 75608
+    checksum: sha256:ab35a04e5f165b30e22368b0b51071949e277a42861092b790cfbee283d474b8
+    name: libICE
+    evr: 1.0.9-15.el8
+    sourcerpm: libICE-1.0.9-15.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libSM-1.2.3-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 48704
+    checksum: sha256:db15deba4b67c54368ae5fee595d7266391c27d5a08b65d3307def5861e8f08a
+    name: libSM
+    evr: 1.2.3-1.el8
+    sourcerpm: libSM-1.2.3-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libX11-1.6.8-9.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 626860
+    checksum: sha256:9c4012d2aaf2e9d1c5a7f315dd284b2df9380d40c2c928507de55585d3404ccf
+    name: libX11
+    evr: 1.6.8-9.el8_10
+    sourcerpm: libX11-1.6.8-9.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libX11-common-1.6.8-9.el8_10.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 162348
+    checksum: sha256:558399ee08f1281a9e2eff4c0bbc3756d374d0e543587bcf2c12e557df479cc6
+    name: libX11-common
+    evr: 1.6.8-9.el8_10
+    sourcerpm: libX11-1.6.8-9.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXau-1.0.9-3.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 38312
+    checksum: sha256:a260f793e49805b188908e2f30c4687abe4e023b20c28a85d10d2371556c3981
+    name: libXau
+    evr: 1.0.9-3.el8
+    sourcerpm: libXau-1.0.9-3.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXaw-1.0.13-10.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 198848
+    checksum: sha256:12f34b20a058f274a3d26ba186fce744d4233bfc000b181ab2e550693991a6fe
+    name: libXaw
+    evr: 1.0.13-10.el8
+    sourcerpm: libXaw-1.0.13-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXcomposite-0.4.4-14.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 29208
+    checksum: sha256:731f537d1872b14290514b5a956c8c012a781f209a6a209ad9ba2cae1c56c388
+    name: libXcomposite
+    evr: 0.4.4-14.el8
+    sourcerpm: libXcomposite-0.4.4-14.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXcursor-1.1.15-3.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 36728
+    checksum: sha256:f75e90c48ab7c823d22717c4c28324a2add144a230f1298486715cff1cf0152b
+    name: libXcursor
+    evr: 1.1.15-3.el8
+    sourcerpm: libXcursor-1.1.15-3.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXdamage-1.1.4-14.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 27352
+    checksum: sha256:2da144f494567dea106daaa85ac1bc4aed74dbd0eb9224d74209930c468c8649
+    name: libXdamage
+    evr: 1.1.4-14.el8
+    sourcerpm: libXdamage-1.1.4-14.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXext-1.3.4-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 46516
+    checksum: sha256:ddafccd3f010fc75da6de158b5a68fd672f8b3554ac403065490318ce2be05f3
+    name: libXext
+    evr: 1.3.4-1.el8
+    sourcerpm: libXext-1.3.4-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXfixes-5.0.3-7.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 25536
+    checksum: sha256:42cd48bff06dee66716b6a6362d6469168d4657511fcf3bd16003c441dc88fea
+    name: libXfixes
+    evr: 5.0.3-7.el8
+    sourcerpm: libXfixes-5.0.3-7.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXft-2.3.3-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 68352
+    checksum: sha256:9b079ce20a6524d8e85d139b2ec2a7dd3f4f79fa283f68208b72b8091e6bde3b
+    name: libXft
+    evr: 2.3.3-1.el8
+    sourcerpm: libXft-2.3.3-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXi-1.7.10-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 49876
+    checksum: sha256:efc45d8d4a0227c6f104cc45622b2251b198dd830aeb1cacd5c47dcd67da7186
+    name: libXi
+    evr: 1.7.10-1.el8
+    sourcerpm: libXi-1.7.10-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXinerama-1.1.4-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 15936
+    checksum: sha256:9226efc49ff191d0d713446e8b28bb58ae4ab1cb64e34a6f7fc08af247202cdd
+    name: libXinerama
+    evr: 1.1.4-1.el8
+    sourcerpm: libXinerama-1.1.4-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXmu-1.1.3-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 77272
+    checksum: sha256:25603514b1a6851156bab1f197c90ac0f164e4a2a76a0ced10fe10cca8724760
+    name: libXmu
+    evr: 1.1.3-1.el8
+    sourcerpm: libXmu-1.1.3-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXpm-3.5.12-11.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 60128
+    checksum: sha256:108007a3991c3cd289207431c7a529ff500080bfac7102eedae65c9ccb25ccb3
+    name: libXpm
+    evr: 3.5.12-11.el8
+    sourcerpm: libXpm-3.5.12-11.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXrandr-1.5.2-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 34436
+    checksum: sha256:34b08ea266a4bbddffe8307693742c11a09c3dc2a9f271f95a7ab5c4f67ea3e3
+    name: libXrandr
+    evr: 1.5.2-1.el8
+    sourcerpm: libXrandr-1.5.2-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXrender-0.9.10-7.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 33568
+    checksum: sha256:871672b8a9ffbe887b32e736494c1f005795bc7ffda026c6a063ee0d28788709
+    name: libXrender
+    evr: 0.9.10-7.el8
+    sourcerpm: libXrender-0.9.10-7.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXt-1.1.5-12.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 189776
+    checksum: sha256:83f898359716704d06c4762b17ad15a65cd8ea31b1df5d1e6b45c559cac14d47
+    name: libXt
+    evr: 1.1.5-12.el8
+    sourcerpm: libXt-1.1.5-12.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXxf86misc-1.0.4-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 23616
+    checksum: sha256:f061b428add88f6f182f40e74feaf1d602cc98e69ef389db09f272f1e55a0f30
+    name: libXxf86misc
+    evr: 1.0.4-1.el8
+    sourcerpm: libXxf86misc-1.0.4-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libXxf86vm-1.1.4-9.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 19620
+    checksum: sha256:c051509ace6612d97eb1a9dd0514360889fd7fbe42c7b8e207fb6e09bab4f832
+    name: libXxf86vm
+    evr: 1.1.4-9.el8
+    sourcerpm: libXxf86vm-1.1.4-9.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libdatrie-0.2.9-7.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 33932
+    checksum: sha256:95d7e5810a279383b792dcc0656b539ffdce847b2b51730ee45f1af46fe994d4
+    name: libdatrie
+    evr: 0.2.9-7.el8
+    sourcerpm: libdatrie-0.2.9-7.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libfontenc-1.1.3-8.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 37636
+    checksum: sha256:5b2545c178e52a79fd09414db8788d4c9f96b48f6e4d568c762e70b56b4858e8
+    name: libfontenc
+    evr: 1.1.3-8.el8
+    sourcerpm: libfontenc-1.1.3-8.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libgs-9.27-16.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 3213584
+    checksum: sha256:69747333b4f689bf00e5ae3153449d30773f09bfca06ed0bbd9509b98222a766
+    name: libgs
+    evr: 9.27-16.el8_10
+    sourcerpm: ghostscript-9.27-16.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libidn-1.34-5.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 244396
+    checksum: sha256:3447f8055b584ad4c36f4282619bb39d1daf3d167957a48953e8f136e6839b11
+    name: libidn
+    evr: 1.34-5.el8
+    sourcerpm: libidn-1.34-5.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libijs-0.35-5.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 30400
+    checksum: sha256:a0e034c93eafb41f4f7759236108775b7c64dd2a2967b3847e214f3a9908e064
+    name: libijs
+    evr: 0.35-5.el8
+    sourcerpm: libijs-0.35-5.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libjpeg-turbo-1.5.3-12.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 160920
+    checksum: sha256:82dba75523110a451d9f4dbb112c68ba15b1cded1519bc982423de032903dbc9
+    name: libjpeg-turbo
+    evr: 1.5.3-12.el8
+    sourcerpm: libjpeg-turbo-1.5.3-12.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libmcpp-2.7.2-20.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 82908
+    checksum: sha256:75e62553eeab9fe76d99a2413412e5c9663596e4eef8cf75e81031f8b3c40c35
+    name: libmcpp
+    evr: 2.7.2-20.el8
+    sourcerpm: mcpp-2.7.2-20.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libpaper-1.1.24-22.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 45680
+    checksum: sha256:86ebcf47eb98fcf9b947b02cb514e3a4aa7b1215a3bc6c1612614f8688b772e1
+    name: libpaper
+    evr: 1.1.24-22.el8
+    sourcerpm: libpaper-1.1.24-22.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/librsvg2-2.42.7-5.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 588588
+    checksum: sha256:d14e0f27e0ff66799661c83daf2fdca7fbe2f5137b0e9f79816010b1e8443079
+    name: librsvg2
+    evr: 2.42.7-5.el8
+    sourcerpm: librsvg2-2.42.7-5.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libthai-0.1.27-2.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 207716
+    checksum: sha256:3d203f221eb11b5a0a216427dee391294b0fb3aa0bc3348fd0d4330556a9b011
+    name: libthai
+    evr: 0.1.27-2.el8
+    sourcerpm: libthai-0.1.27-2.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libtiff-4.0.9-33.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 194928
+    checksum: sha256:c45f5fef1b5786527ee8a5e3c29e6de1effe09af3fa791870208a6c9318c7d50
+    name: libtiff
+    evr: 4.0.9-33.el8_10
+    sourcerpm: libtiff-4.0.9-33.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libwebp-1.0.0-9.el8_9.1.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 280472
+    checksum: sha256:e30e48384630f9c997cae4a5ab718ea91f426832e06b71db4da0a7d16cfcf600
+    name: libwebp
+    evr: 1.0.0-9.el8_9.1
+    sourcerpm: libwebp-1.0.0-9.el8_9.1.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/l/libxcb-1.13.1-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 234420
+    checksum: sha256:39e6bc1e8101e536066554702d5d6b25f8cad359fb5e02ac598cfdad56eafb6d
+    name: libxcb
+    evr: 1.13.1-1.el8
+    sourcerpm: libxcb-1.13.1-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/m/mcpp-2.7.2-20.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 32228
+    checksum: sha256:efa2613a6f9b2e796cb7a8b1e243f8d15be0866ea71e9226b0a092ddefef3ec8
+    name: mcpp
+    evr: 2.7.2-20.el8
+    sourcerpm: mcpp-2.7.2-20.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/o/oniguruma-6.8.2-3.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 192632
+    checksum: sha256:1c5c91d8a33987892ec7320c08311a31245be91800aa5879e20d137971bd053f
+    name: oniguruma
+    evr: 6.8.2-3.el8
+    sourcerpm: oniguruma-6.8.2-3.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/o/openjpeg2-2.4.0-5.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 169012
+    checksum: sha256:936f9d627574c4cdf571d034dcc4a03c9d623f6a275c8d83deac055a55f529dd
+    name: openjpeg2
+    evr: 2.4.0-5.el8
+    sourcerpm: openjpeg2-2.4.0-5.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/p/pango-1.42.4-8.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 304480
+    checksum: sha256:d0e41cd47e15807906792aaff4ebc2502efc63548e09da456b105748129d09b9
+    name: pango
+    evr: 1.42.4-8.el8
+    sourcerpm: pango-1.42.4-8.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/p/pixman-0.38.4-4.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 263800
+    checksum: sha256:7b463191aeedc6c0dde44a0196c708cade83c24d643829e50e0656e8383f78ae
+    name: pixman
+    evr: 0.38.4-4.el8
+    sourcerpm: pixman-0.38.4-4.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-bookman-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 877408
+    checksum: sha256:da844cfd35bf0bb946885f0d23c45873ebd2f48753747c1355eec5571af63827
+    name: urw-base35-bookman-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-c059-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 905124
+    checksum: sha256:aa0dcea600b69b6dbd6176c78c4cdc7fe2e28edcb71433df926aabd896e299ab
+    name: urw-base35-c059-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-d050000l-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 81200
+    checksum: sha256:cdfae9c90d009a6de249a108d398a9a216f8953d3386d4a7352a761127abd1b2
+    name: urw-base35-d050000l-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 12480
+    checksum: sha256:9d398eb2d7658216f9b8e90d00c5359a85596cafafd94febaceb516b62c02026
+    name: urw-base35-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-fonts-common-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 23872
+    checksum: sha256:10a2c21e87ed50aeecc56b7527fc4a872b85bf3c40d4c5dde96ae17abca93895
+    name: urw-base35-fonts-common
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-gothic-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 670068
+    checksum: sha256:91f2071c95278d5e50d02394be50e954c650d2adfc36713227700a52789c68cd
+    name: urw-base35-gothic-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-nimbus-mono-ps-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 820196
+    checksum: sha256:8fc64ceb2ae825f607e52e121fb518494bb6a0ebc77c6f06465c5a88576751ef
+    name: urw-base35-nimbus-mono-ps-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-nimbus-roman-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 885612
+    checksum: sha256:0eb3491251bbe7c63728bd613c97b2d3259508728cca56a9599f705e08cdc020
+    name: urw-base35-nimbus-roman-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-nimbus-sans-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 1352712
+    checksum: sha256:24cabc33faad2b2e3fb1049c61bffe5adaefd19a63f1db5d17609fe181c1cbb5
+    name: urw-base35-nimbus-sans-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-p052-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 1005916
+    checksum: sha256:29dd088431ac9574ebed65d7a1d230ae0d51966ec9dbb3fab1ad56df885eb46a
+    name: urw-base35-p052-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-standard-symbols-ps-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 45212
+    checksum: sha256:066088d80513ff407adcf716143b5958a24ea32f0ef58b3aed51c4c4d341bec7
+    name: urw-base35-standard-symbols-ps-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/u/urw-base35-z003-fonts-20170801-10.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 286164
+    checksum: sha256:e2e2af0d3461987ee1bcc0a6aedf798f907c3b680c687d4179359186f5dc387c
+    name: urw-base35-z003-fonts
+    evr: 20170801-10.el8
+    sourcerpm: urw-base35-fonts-20170801-10.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/x/xorg-x11-font-utils-7.5-41.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 106144
+    checksum: sha256:966566770c97b65d5c2d743631322241fc8508f56c2698fc706bd7dba3761199
+    name: xorg-x11-font-utils
+    evr: 1:7.5-41.el8
+    sourcerpm: xorg-x11-font-utils-7.5-41.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/x/xorg-x11-fonts-ISO8859-1-100dpi-7.5-19.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 1109848
+    checksum: sha256:460d123daa11f00f22164e841d49886b8852fef5a7ebf08d6c4f2b719fe8b43f
+    name: xorg-x11-fonts-ISO8859-1-100dpi
+    evr: 7.5-19.el8
+    sourcerpm: xorg-x11-fonts-7.5-19.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/appstream/os/Packages/x/xorg-x11-server-utils-7.7-27.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-appstream-rpms
+    size: 202016
+    checksum: sha256:c248785c584b6142288e834ce34f5ac703c7ebce94c5ff60f4fd40c229493909
+    name: xorg-x11-server-utils
+    evr: 7.7-27.el8
+    sourcerpm: xorg-x11-server-utils-7.7-27.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/a/avahi-libs-0.7-27.el8_10.1.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 63848
+    checksum: sha256:f2f4b6a3501e339521c5e5f00e96fa06655535b564c24daa706a9064d543ae2c
+    name: avahi-libs
+    evr: 0.7-27.el8_10.1
+    sourcerpm: avahi-0.7-27.el8_10.1.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/c/cups-libs-2.2.6-62.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 448028
+    checksum: sha256:b4082915e95fa77e369d024433dc0b01017f784cfb5b03b5f3fe516f95d510ec
+    name: cups-libs
+    evr: 1:2.2.6-62.el8_10
+    sourcerpm: cups-2.2.6-62.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/e/emacs-filesystem-26.1-13.el8_10.noarch.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 72256
+    checksum: sha256:00cd8d7a426bfd9c80fc94077b0c87a8a7d60cd90442dc7665f6f8676452bcd7
+    name: emacs-filesystem
+    evr: 1:26.1-13.el8_10
+    sourcerpm: emacs-26.1-13.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/f/fontconfig-2.13.1-4.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 280836
+    checksum: sha256:7f2a8ed367bbe341e4c7570746cdeada3b68f6d1e498b411748b972190bce95c
+    name: fontconfig
+    evr: 2.13.1-4.el8
+    sourcerpm: fontconfig-2.13.1-4.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/f/fontpackages-filesystem-1.44-22.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 16324
+    checksum: sha256:db1fad3c2d8735e69084bd4b09ea963938e4dde2f2e096dc7a4ce146f18b7ab0
+    name: fontpackages-filesystem
+    evr: 1.44-22.el8
+    sourcerpm: fontpackages-1.44-22.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/f/freetype-2.9.1-10.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 403276
+    checksum: sha256:2ef3b0f9975f2c7d9f3ca3d336efa90cffdb8101f594e7e0cf1a3b7efdb8f14e
+    name: freetype
+    evr: 2.9.1-10.el8_10
+    sourcerpm: freetype-2.9.1-10.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/g/gdk-pixbuf2-2.36.12-6.el8_10.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 477652
+    checksum: sha256:5181f4e31412ff38a53b392799d55ec0bb6876104ba68aa930a4e99d4128a651
+    name: gdk-pixbuf2
+    evr: 2.36.12-6.el8_10
+    sourcerpm: gdk-pixbuf2-2.36.12-6.el8_10.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/l/libcroco-0.6.12-4.el8_2.1.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 115260
+    checksum: sha256:d0982bac60512aaf37a99078e24446337ab6210db07ed95c49baeb9a3811dd2b
+    name: libcroco
+    evr: 0.6.12-4.el8_2.1
+    sourcerpm: libcroco-0.6.12-4.el8_2.1.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/l/libpkgconf-1.4.2-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 35620
+    checksum: sha256:96fadfed6a8225a89b331e7b62ed8ee74b393cea1520fa0d89f6f0dc1a458fb3
+    name: libpkgconf
+    evr: 1.4.2-1.el8
+    sourcerpm: pkgconf-1.4.2-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/l/libpng-1.6.34-5.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 129016
+    checksum: sha256:53d9bb412615966acdf9a6b1c26c5899a9c2c0b76a27f360d3d6076536d2540a
+    name: libpng
+    evr: 2:1.6.34-5.el8
+    sourcerpm: libpng-1.6.34-5.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/l/libtool-ltdl-2.4.6-25.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 59180
+    checksum: sha256:d805c42ee9293a8ba35f49af63e3f7d813420d4a62ee4cff5ecd7391be851a9b
+    name: libtool-ltdl
+    evr: 2.4.6-25.el8
+    sourcerpm: libtool-2.4.6-25.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/p/pkgconf-1.4.2-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 38956
+    checksum: sha256:b9d0a4c0e16db4c05b2d0690216d8c5da2db7d67bc765a00ce2a32c5f810c245
+    name: pkgconf
+    evr: 1.4.2-1.el8
+    sourcerpm: pkgconf-1.4.2-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/p/pkgconf-m4-1.4.2-1.el8.noarch.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 17484
+    checksum: sha256:9a89874a5b8326c85c0b34b02c122ffc052b32a12b20354ce95859ac5296a159
+    name: pkgconf-m4
+    evr: 1.4.2-1.el8
+    sourcerpm: pkgconf-1.4.2-1.el8.src.rpm
+  - url: https://cdn.redhat.com/content/dist/rhel8/8.10/x86_64/baseos/os/Packages/p/pkgconf-pkg-config-1.4.2-1.el8.x86_64.rpm
+    repoid: rhel-8-for-x86_64-baseos-rpms
+    size: 15628
+    checksum: sha256:1c4a8674eafc31d36030f3fd0c081326d4301570d4e35b59d6f6ef1e163f655b
+    name: pkgconf-pkg-config
+    evr: 1.4.2-1.el8
+    sourcerpm: pkgconf-1.4.2-1.el8.src.rpm
+  source: []
+  module_metadata: []

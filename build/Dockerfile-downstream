@@ -1,0 +1,28 @@
+FROM registry.redhat.io/openshift4/ose-cli:v4.15.0-202503170806.p0.g8231637.assembly.stream.el8
+
+WORKDIR /app
+COPY --chown=1001:0 ./ ./
+
+RUN dnf -y update --nobest && dnf clean all
+RUN dnf install -y findutils graphviz jq rsync tar && dnf clean all
+
+COPY collection-scripts/* /usr/bin/
+
+ENTRYPOINT ["/usr/bin/gather"]
+
+ARG VERSION
+ARG REGISTRY
+ARG REVISION
+
+LABEL \
+    com.redhat.component="mtv-must-gather-container" \
+    version="$VERSION" \
+    name="${REGISTRY}/mtv-must-gather-rhel8" \
+    license="Apache License 2.0" \
+    io.k8s.display-name="Migration Toolkit for Virtualization" \
+    io.k8s.description="Migration Toolkit for Virtualization - Must Gather" \
+    io.openshift.tags="migration,mtv,forklift" \
+    summary="Migration Toolkit for Virtualization - Must Gather" \
+    description="Migration Toolkit for Virtualization - Must Gather" \
+    maintainer="Migration Toolkit for Virtualization Team <migtoolkit-virt@redhat.com>" \
+    revision="$REVISION"
