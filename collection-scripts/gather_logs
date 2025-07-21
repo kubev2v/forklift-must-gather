@@ -18,6 +18,19 @@ for ns in ${namespaces[@]}; do
   done
 done
 
+# Collect related virt-v2v logs from all plans
+for plan in $(/usr/bin/oc get plan --no-headers --all-namespaces -o go-template='{{range .items}}{{.metadata.uid}},{{.spec.targetNamespace}}{{"\n"}}{{end}}'); do
+  IFS="," read planUid targetNs <<< "${plan}"
+  for pod in $(/usr/bin/oc get pods --no-headers --namespace $targetNs -l plan=$planUid | awk '{print $1}'); do
+    object_collection_path="/must-gather/namespaces/${targetNs}/logs/${pod}"
+    mkdir -p ${object_collection_path}
+    echo "[ns=${targetNs}][pod=${pod}] Collecting Pod logs..."
+    /usr/bin/oc logs --all-containers --namespace ${targetNs} ${pod} &> "${object_collection_path}/current.log" &
+    echo "[ns=${targetNs}][pod=${pod}] Collecting previous Pod logs..."
+    /usr/bin/oc logs --previous --all-containers --namespace ${targetNs} ${pod} &> "${object_collection_path}/previous.log" &
+    pwait $max_parallelism
+  done
+done
 
 # Collect related CNV components logs: CDI and vm-import
 ns=openshift-cnv
