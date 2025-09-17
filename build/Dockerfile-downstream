@@ -16,6 +16,7 @@ ARG REVISION
 
 LABEL \
     com.redhat.component="mtv-must-gather-container" \
+    cpe="cpe:/a:redhat:migration_toolkit_virtualization:2.9::el8" \
     version="$VERSION" \
     name="${REGISTRY}/mtv-must-gather-rhel8" \
     license="Apache License 2.0" \
