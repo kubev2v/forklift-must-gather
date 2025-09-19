@@ -169,6 +169,8 @@ main() {
   local valid_count=0 invalid_count=0 skipped_count=0 chore_count=0
   local validation_failed=false
   
+  echo "DEBUG: Initialized counters - valid:$valid_count invalid:$invalid_count skipped:$skipped_count chore:$chore_count failed:$validation_failed"
+  
   # Set default commit range if not provided
   if [[ -z "$COMMIT_RANGE" ]]; then
     echo "No commit range provided, will validate HEAD commit only"
@@ -213,23 +215,23 @@ main() {
     
     case "$result" in
       "valid") 
-        echo "DEBUG: Incrementing valid_count"
-        ((valid_count++)) 
+        echo "DEBUG: Incrementing valid_count (was: $valid_count)"
+        valid_count=$((valid_count + 1))
         echo "DEBUG: valid_count is now: $valid_count"
         ;;
       "invalid") 
-        echo "DEBUG: Incrementing invalid_count"
-        ((invalid_count++))
+        echo "DEBUG: Incrementing invalid_count (was: $invalid_count)"
+        invalid_count=$((invalid_count + 1))
         validation_failed=true
         echo "DEBUG: Set validation_failed=true"
         ;;
       "bot") 
-        echo "DEBUG: Incrementing skipped_count (bot)"
-        ((skipped_count++)) 
+        echo "DEBUG: Incrementing skipped_count (was: $skipped_count)"
+        skipped_count=$((skipped_count + 1))
         ;;
       "chore") 
-        echo "DEBUG: Incrementing chore_count"
-        ((chore_count++)) 
+        echo "DEBUG: Incrementing chore_count (was: $chore_count)"
+        chore_count=$((chore_count + 1))
         ;;
       *)
         echo "DEBUG: Unexpected result: '$result'"
