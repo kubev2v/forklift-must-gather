@@ -83,10 +83,17 @@ is_chore_commit() {
   echo "$message" | grep -qi "chore"
 }
 
-# Extract commit description (first non-empty line after subject)
+# Extract commit description (look for Resolves: line anywhere in commit)
 extract_description() {
   local message="$1"
-  echo "$message" | tail -n +2 | sed '/^$/d' | head -1
+  # First try to find a "Resolves:" line anywhere in the message
+  local resolves_line=$(echo "$message" | grep -E "^Resolves: ")
+  if [[ -n "$resolves_line" ]]; then
+    echo "$resolves_line"
+  else
+    # Fallback to first non-empty line after subject
+    echo "$message" | tail -n +2 | sed '/^$/d' | head -1
+  fi
 }
 
 # Validate commit description format
@@ -141,12 +148,8 @@ process_commit() {
     log_error "❌ Commit $commit: Invalid commit description format"
     log_error "   Author: $author_name <$author_email>"
     log_error "   Subject: $(echo "$commit_msg" | head -1)"
-    log_error "   Description: '$description'"
-    log_error "   Description length: ${#description}"
-    log_error "   Description hex dump: $(echo -n "$description" | hexdump -C)"
+    log_error "   Description: $description"
     log_error "   Expected format: Resolves: MTV-<number> or Resolves: None"
-    log_error "   MTV pattern: $MTV_PATTERN"
-    log_error "   NONE pattern: $NONE_PATTERN"
     echo ""
     echo "invalid"
   fi
