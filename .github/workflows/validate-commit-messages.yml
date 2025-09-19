@@ -44,5 +44,29 @@ jobs:
         # Ensure script is executable  
         chmod +x ./scripts/validate-commits.sh
         
-        # Run the validation script
-        ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose
+        # Run the validation script with enhanced debugging
+        echo "DEBUG: About to run validation script"
+        echo "DEBUG: Script exists: $(ls -la ./scripts/validate-commits.sh)"
+        echo "DEBUG: Script permissions: $(stat -c '%a' ./scripts/validate-commits.sh 2>/dev/null || stat -f '%A' ./scripts/validate-commits.sh)"
+        
+        # Show what commits we're actually validating
+        echo "DEBUG: Commits in range:"
+        git log --oneline "$COMMIT_RANGE"
+        
+        # Test the script with a simple operation first
+        echo "DEBUG: Testing script basic functionality..."
+        ./scripts/validate-commits.sh --help || echo "Help command failed"
+        
+        # Run the script and capture both stdout and stderr
+        echo "DEBUG: Running validation script..."
+        set +e  # Don't exit on error so we can capture the exit code
+        ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose 2>&1 | tee validation_output.log
+        VALIDATION_EXIT_CODE=$?
+        set -e  # Re-enable exit on error
+        
+        echo "DEBUG: Validation exit code: $VALIDATION_EXIT_CODE"
+        echo "DEBUG: Validation output:"
+        cat validation_output.log
+        
+        # Exit with the actual validation exit code
+        exit $VALIDATION_EXIT_CODE
