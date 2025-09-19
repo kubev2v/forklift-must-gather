@@ -16,28 +16,31 @@ jobs:
     
     - name: Validate commit messages
       run: |
-        echo "=== Environment Debugging ==="
-        echo "PWD: $(pwd)"
-        echo "Git status:"
-        git status || echo "Git status failed"
-        echo "Git log (last 3):"
-        git log --oneline -3 || echo "Git log failed"
-        echo "HEAD commit:"
-        git rev-parse HEAD || echo "Git rev-parse failed"
-        echo "HEAD~1 exists:"
-        git rev-parse HEAD~1 || echo "HEAD~1 does not exist"
-        echo "Script exists:"
-        ls -la ./scripts/validate-commits.sh || echo "Script not found"
-        echo "Script content (first 10 lines):"
-        head -10 ./scripts/validate-commits.sh || echo "Cannot read script"
+        # Determine commit range based on event type
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          # For PRs, validate commits in the PR
+          COMMIT_RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+        else
+          # For pushes, determine the range carefully
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            # New branch, validate only the latest commit
+            COMMIT_RANGE="HEAD~1..HEAD"
+          else
+            # Check if the before SHA exists in the current repository
+            if git cat-file -e "${{ github.event.before }}" 2>/dev/null; then
+              # Before SHA exists, validate commits in this push
+              COMMIT_RANGE="${{ github.event.before }}..${{ github.event.after }}"
+            else
+              # Before SHA doesn't exist (force push), validate only the latest commit
+              echo "Warning: Before SHA ${{ github.event.before }} not found (likely force push)"
+              echo "Falling back to validating only the latest commit"
+              COMMIT_RANGE="HEAD~1..HEAD"
+            fi
+          fi
+        fi
         
-        echo "=== Making script executable ==="
+        echo "Validating commits in range: $COMMIT_RANGE"
+        
+        # Make script executable and run validation
         chmod +x ./scripts/validate-commits.sh
-        ls -la ./scripts/validate-commits.sh
-        
-        echo "=== Testing basic script functionality ==="
-        ./scripts/validate-commits.sh --help || echo "Help command failed"
-        
-        echo "=== Running actual validation ==="
-        # Don't pass any range - let the script default to validating just HEAD
-        ./scripts/validate-commits.sh --verbose
+        ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose

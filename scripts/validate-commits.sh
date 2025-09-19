@@ -114,7 +114,6 @@ process_commit() {
   local commit="$1"
   local author_email author_name commit_msg description
   
-  echo "DEBUG: process_commit called with: '$commit'"
   log_verbose "Checking commit: $commit"
   
   # Get commit details
@@ -169,16 +168,13 @@ main() {
   local valid_count=0 invalid_count=0 skipped_count=0 chore_count=0
   local validation_failed=false
   
-  echo "DEBUG: Initialized counters - valid:$valid_count invalid:$invalid_count skipped:$skipped_count chore:$chore_count failed:$validation_failed"
-  
   # Set default commit range if not provided
   if [[ -z "$COMMIT_RANGE" ]]; then
-    echo "No commit range provided, will validate HEAD commit only"
-    # Just validate the current HEAD commit
+    # Default to validating just the current HEAD commit
     local head_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
     if [[ -n "$head_commit" ]]; then
       commits="$head_commit"
-      echo "🔍 Validating single commit: $head_commit"
+      echo "🔍 Validating commit: $head_commit"
     else
       log_error "❌ Cannot determine HEAD commit"
       exit 1
@@ -205,53 +201,36 @@ main() {
   fi
   
   # Process each commit
-  echo "DEBUG: About to process commits: '$commits'"
   while IFS= read -r commit; do
-    echo "DEBUG: Processing commit line: '$commit'"
     [[ -n "$commit" ]] || continue
-    echo "DEBUG: About to validate commit: $commit"
     result=$(process_commit "$commit" 2>&1 | tail -1)
-    echo "DEBUG: Validation result: '$result'"
     
     case "$result" in
       "valid") 
-        echo "DEBUG: Incrementing valid_count (was: $valid_count)"
         valid_count=$((valid_count + 1))
-        echo "DEBUG: valid_count is now: $valid_count"
         ;;
       "invalid") 
-        echo "DEBUG: Incrementing invalid_count (was: $invalid_count)"
         invalid_count=$((invalid_count + 1))
         validation_failed=true
-        echo "DEBUG: Set validation_failed=true"
         ;;
       "bot") 
-        echo "DEBUG: Incrementing skipped_count (was: $skipped_count)"
         skipped_count=$((skipped_count + 1))
         ;;
       "chore") 
-        echo "DEBUG: Incrementing chore_count (was: $chore_count)"
         chore_count=$((chore_count + 1))
-        ;;
-      *)
-        echo "DEBUG: Unexpected result: '$result'"
         ;;
     esac
   done <<< "$commits"
   
   # Print summary
   echo ""
-  echo "DEBUG: About to print summary"
-  echo "DEBUG: valid_count=$valid_count, invalid_count=$invalid_count, validation_failed=$validation_failed"
   echo "📊 Validation Summary:"
   echo "  ✅ Valid commits: $valid_count"
   echo "  ❌ Invalid commits: $invalid_count"
   echo "  🤖 Skipped (bot users): $skipped_count"
   echo "  🔧 Skipped (chore commits): $chore_count"
   
-  echo "DEBUG: Checking if validation_failed=$validation_failed"
   if [[ "$validation_failed" == true ]]; then
-    echo "DEBUG: validation_failed is true, will exit 1"
     echo ""
     log_error "❌ Commit message validation failed!"
     echo ""
@@ -269,7 +248,6 @@ main() {
     echo ""
     exit 1
   else
-    echo "DEBUG: validation_failed is false, will exit 0"
     echo "✅ All commit messages are valid!"
     exit 0
   fi
