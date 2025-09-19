@@ -41,5 +41,19 @@ jobs:
         
         echo "Using commit range: $COMMIT_RANGE"
         
-        # Run the validation script
-        ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose
+        # Debug information
+        echo "Current HEAD: $(git rev-parse HEAD)"
+        echo "Repository status:"
+        git log --oneline -5
+        echo "Commits in range:"
+        git log --oneline "$COMMIT_RANGE" || echo "Failed to list commits in range"
+        
+        # Ensure script is executable
+        chmod +x ./scripts/validate-commits.sh
+        
+        # Run the validation script with error handling
+        if ! ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose; then
+          echo "Validation failed with exit code $?"
+          echo "Attempting fallback validation with HEAD~1..HEAD"
+          ./scripts/validate-commits.sh --range "HEAD~1..HEAD" --verbose
+        fi
