@@ -114,6 +114,7 @@ process_commit() {
   local commit="$1"
   local author_email author_name commit_msg description
   
+  echo "DEBUG: process_commit called with: '$commit'"
   log_verbose "Checking commit: $commit"
   
   # Get commit details
@@ -175,6 +176,7 @@ main() {
     local head_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
     if [[ -n "$head_commit" ]]; then
       commits="$head_commit"
+      echo "🔍 Validating single commit: $head_commit"
     else
       log_error "❌ Cannot determine HEAD commit"
       exit 1
@@ -201,9 +203,13 @@ main() {
   fi
   
   # Process each commit
+  echo "DEBUG: About to process commits: '$commits'"
   while IFS= read -r commit; do
+    echo "DEBUG: Processing commit line: '$commit'"
     [[ -n "$commit" ]] || continue
+    echo "DEBUG: About to validate commit: $commit"
     result=$(process_commit "$commit" 2>&1 | tail -1)
+    echo "DEBUG: Validation result: '$result'"
     
     case "$result" in
       "valid") ((valid_count++)) ;;
