@@ -86,13 +86,20 @@ is_chore_commit() {
 # Extract commit description (look for Resolves: line anywhere in commit)
 extract_description() {
   local message="$1"
-  # First try to find a "Resolves:" line anywhere in the message
-  local resolves_line=$(echo "$message" | grep -E "^Resolves: ")
+  
+  # First try to find a "Resolves:" line anywhere in the message (exact case)
+  local resolves_line=$(echo "$message" | grep -E "^Resolves: " | head -1)
   if [[ -n "$resolves_line" ]]; then
     echo "$resolves_line"
+    return
+  fi
+  
+  # Fallback to first non-empty line after subject if no Resolves line found
+  local fallback_desc=$(echo "$message" | tail -n +2 | sed '/^$/d' | head -1)
+  if [[ -n "$fallback_desc" ]]; then
+    echo "$fallback_desc"
   else
-    # Fallback to first non-empty line after subject
-    echo "$message" | tail -n +2 | sed '/^$/d' | head -1
+    echo "No description found"
   fi
 }
 
