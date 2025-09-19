@@ -99,7 +99,7 @@ extract_description() {
   if [[ -n "$fallback_desc" ]]; then
     echo "$fallback_desc"
   else
-    echo "No description found"
+    echo ""  # Return empty string for missing description
   fi
 }
 
@@ -107,6 +107,82 @@ extract_description() {
 validate_description() {
   local description="$1"
   echo "$description" | grep -qE "$MTV_PATTERN|$NONE_PATTERN"
+}
+
+# Print detailed error information for invalid commits
+print_detailed_error() {
+  local commit="$1"
+  local author_name="$2"
+  local author_email="$3"
+  local commit_msg="$4"
+  local error_type="$5"
+  local description="$6"
+  
+  local short_sha=$(echo "$commit" | cut -c1-8)
+  local subject=$(echo "$commit_msg" | head -1)
+  
+  echo ""
+  echo "🚨 COMMIT VALIDATION FAILED"
+  echo "═══════════════════════════════════════════════════════════════"
+  echo "📋 Commit Details:"
+  echo "   SHA:     $short_sha"
+  echo "   Author:  $author_name <$author_email>"
+  echo "   Subject: $subject"
+  echo ""
+  
+  case "$error_type" in
+    "missing-description")
+      echo "❌ Problem: Missing commit description"
+      echo "   Your commit only has a subject line, but we require a description"
+      echo "   with a 'Resolves:' line."
+      echo ""
+      echo "🔧 How to fix:"
+      echo "   Add a description to your commit with one of these formats:"
+      echo "   • Resolves: MTV-<ticket-number>  (e.g., Resolves: MTV-123)"
+      echo "   • Resolves: None  (if no ticket is associated)"
+      echo ""
+      echo "   To fix this commit:"
+      echo "   git commit --amend -m \"$subject"
+      echo ""
+      echo "   <Add your description here>"
+      echo ""
+      echo "   Resolves: MTV-XXXX\""
+      ;;
+    "invalid-format")
+      echo "❌ Problem: Invalid 'Resolves:' format"
+      echo "   Found: $description"
+      echo ""
+      echo "🔧 How to fix:"
+      echo "   Replace the description line with one of these exact formats:"
+      echo "   • Resolves: MTV-<number>  (e.g., Resolves: MTV-123)"
+      echo "   • Resolves: None  (if no ticket)"
+      echo ""
+      echo "   To fix this commit:"
+      echo "   git commit --amend -m \"$subject"
+      echo ""
+      echo "   <Keep your existing description>"
+      echo ""
+      echo "   Resolves: MTV-XXXX\""
+      echo ""
+      echo "   Or if no ticket:"
+      echo "   git commit --amend -m \"$subject"
+      echo ""
+      echo "   <Keep your existing description>"
+      echo ""
+      echo "   Resolves: None\""
+      ;;
+  esac
+  
+  echo ""
+  echo "📖 More examples:"
+  echo "   git commit -m \"Fix user authentication bug"
+  echo ""
+  echo "   Updated the login validation to handle edge cases properly."
+  echo "   This resolves issues with special characters in passwords."
+  echo ""
+  echo "   Resolves: MTV-456\""
+  echo ""
+  echo "═══════════════════════════════════════════════════════════════"
 }
 
 # Process a single commit
@@ -139,11 +215,7 @@ process_commit() {
   description=$(extract_description "$commit_msg")
   
   if [[ -z "$description" ]]; then
-    log_error "❌ Commit $commit: Missing commit description"
-    log_error "   Author: $author_name <$author_email>"
-    log_error "   Message: $(echo "$commit_msg" | head -1)"
-    log_error "   Expected format in description: Resolves: MTV-<number> or Resolves: None"
-    echo ""
+    print_detailed_error "$commit" "$author_name" "$author_email" "$commit_msg" "missing-description"
     echo "invalid"
     return
   fi
@@ -152,12 +224,7 @@ process_commit() {
     log_verbose "✅ Commit $commit: Valid format"
     echo "valid"
   else
-    log_error "❌ Commit $commit: Invalid commit description format"
-    log_error "   Author: $author_name <$author_email>"
-    log_error "   Subject: $(echo "$commit_msg" | head -1)"
-    log_error "   Description: $description"
-    log_error "   Expected format: Resolves: MTV-<number> or Resolves: None"
-    echo ""
+    print_detailed_error "$commit" "$author_name" "$author_email" "$commit_msg" "invalid-format" "$description"
     echo "invalid"
   fi
 }
@@ -203,7 +270,16 @@ main() {
   # Process each commit
   while IFS= read -r commit; do
     [[ -n "$commit" ]] || continue
-    result=$(process_commit "$commit" 2>&1 | tail -1)
+    
+    # Capture both output and result
+    local output
+    output=$(process_commit "$commit" 2>&1)
+    result=$(echo "$output" | tail -1)
+    
+    # Show detailed errors immediately
+    if [[ "$result" == "invalid" ]]; then
+      echo "$output" | sed '$d'  # Show everything except the last line (result)
+    fi
     
     case "$result" in
       "valid") 
@@ -232,19 +308,33 @@ main() {
   
   if [[ "$validation_failed" == true ]]; then
     echo ""
-    log_error "❌ Commit message validation failed!"
+    echo "💥 VALIDATION FAILED: $invalid_count commit(s) need to be fixed"
     echo ""
-    echo "Commit messages must include one of these formats in the description:"
-    echo "  • Resolves: MTV-<number>"
-    echo "  • Resolves: None"
+    echo "🛠️  QUICK FIX GUIDE:"
+    echo "════════════════════════════════════════════════════════════════"
     echo ""
-    echo "Exceptions:"
-    echo "  • Bot users (dependabot, renovate, ci, github-actions, etc.)"
-    echo "  • Commits containing 'chore' in the message"
+    echo "For the LATEST commit (most common case):"
+    echo "   git commit --amend"
+    echo "   # Edit your commit message to include a 'Resolves:' line"
     echo ""
-    echo "Example commit:"
-    echo "  Subject: Fix bug in data processing"
-    echo "  Description: Resolves: MTV-123"
+    echo "For OLDER commits in your branch:"
+    echo "   git rebase -i HEAD~$((invalid_count + valid_count))"
+    echo "   # Mark commits as 'edit' or 'reword' to fix them"
+    echo ""
+    echo "For commits in a PULL REQUEST:"
+    echo "   1. Fix the commits using the methods above"
+    echo "   2. Force push: git push --force-with-lease"
+    echo ""
+    echo "📋 Required format in commit description:"
+    echo "   • Resolves: MTV-<number>  (e.g., MTV-123, MTV-4567)"
+    echo "   • Resolves: None  (if no ticket associated)"
+    echo ""
+    echo "🚫 These commits are automatically skipped:"
+    echo "   • Bot users (dependabot, renovate, github-actions, etc.)"
+    echo "   • Commits with 'chore' in the message"
+    echo ""
+    echo "❓ Need help? Check the detailed errors above for specific fixes."
+    echo "════════════════════════════════════════════════════════════════"
     echo ""
     exit 1
   else
