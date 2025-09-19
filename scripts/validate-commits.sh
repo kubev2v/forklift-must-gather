@@ -170,26 +170,34 @@ main() {
   
   # Set default commit range if not provided
   if [[ -z "$COMMIT_RANGE" ]]; then
-    COMMIT_RANGE="HEAD~1..HEAD"
-  fi
-  
-  echo "🔍 Validating commit messages in range: $COMMIT_RANGE"
-  
-  # Check if the commit range is valid first
-  if ! git rev-list "$COMMIT_RANGE" >/dev/null 2>&1; then
-    log_error "❌ Invalid commit range: $COMMIT_RANGE"
-    log_error "   This may happen when the 'before' commit doesn't exist in the current branch"
-    log_error "   (e.g., after a force push or rebase)"
-    exit 1
-  fi
-  
-  # Get commits to validate
-  commits=$(git rev-list "$COMMIT_RANGE" 2>/dev/null || true)
-  
-  if [[ -z "$commits" ]]; then
-    log_error "❌ No commits found in range: $COMMIT_RANGE"
-    log_error "   The range exists but contains no commits"
-    exit 1
+    echo "No commit range provided, will validate HEAD commit only"
+    # Just validate the current HEAD commit
+    local head_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
+    if [[ -n "$head_commit" ]]; then
+      commits="$head_commit"
+    else
+      log_error "❌ Cannot determine HEAD commit"
+      exit 1
+    fi
+  else
+    echo "🔍 Validating commit messages in range: $COMMIT_RANGE"
+    
+    # Check if the commit range is valid first
+    if ! git rev-list "$COMMIT_RANGE" >/dev/null 2>&1; then
+      log_error "❌ Invalid commit range: $COMMIT_RANGE"
+      log_error "   This may happen when the 'before' commit doesn't exist in the current branch"
+      log_error "   (e.g., after a force push or rebase)"
+      exit 1
+    fi
+    
+    # Get commits to validate
+    commits=$(git rev-list "$COMMIT_RANGE" 2>/dev/null || true)
+    
+    if [[ -z "$commits" ]]; then
+      log_error "❌ No commits found in range: $COMMIT_RANGE"
+      log_error "   The range exists but contains no commits"
+      exit 1
+    fi
   fi
   
   # Process each commit

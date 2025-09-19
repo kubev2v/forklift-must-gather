@@ -16,16 +16,28 @@ jobs:
     
     - name: Validate commit messages
       run: |
-        # Simple approach: always validate just the latest commit for now
-        echo "Validating latest commit only..."
-        echo "Current HEAD: $(git rev-parse HEAD)"
-        echo "Latest commit message:"
-        git log -1 --pretty=format:"%B"
-        echo ""
-        echo "Running validation..."
+        echo "=== Environment Debugging ==="
+        echo "PWD: $(pwd)"
+        echo "Git status:"
+        git status || echo "Git status failed"
+        echo "Git log (last 3):"
+        git log --oneline -3 || echo "Git log failed"
+        echo "HEAD commit:"
+        git rev-parse HEAD || echo "Git rev-parse failed"
+        echo "HEAD~1 exists:"
+        git rev-parse HEAD~1 || echo "HEAD~1 does not exist"
+        echo "Script exists:"
+        ls -la ./scripts/validate-commits.sh || echo "Script not found"
+        echo "Script content (first 10 lines):"
+        head -10 ./scripts/validate-commits.sh || echo "Cannot read script"
         
-        # Make script executable
+        echo "=== Making script executable ==="
         chmod +x ./scripts/validate-commits.sh
+        ls -la ./scripts/validate-commits.sh
         
-        # Run validation on just the latest commit
-        ./scripts/validate-commits.sh --range "HEAD~1..HEAD" --verbose
+        echo "=== Testing basic script functionality ==="
+        ./scripts/validate-commits.sh --help || echo "Help command failed"
+        
+        echo "=== Running actual validation ==="
+        # Don't pass any range - let the script default to validating just HEAD
+        ./scripts/validate-commits.sh --verbose
