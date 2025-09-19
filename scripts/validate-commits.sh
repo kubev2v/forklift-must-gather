@@ -161,11 +161,20 @@ main() {
   
   echo "🔍 Validating commit messages in range: $COMMIT_RANGE"
   
+  # Check if the commit range is valid first
+  if ! git rev-list "$COMMIT_RANGE" >/dev/null 2>&1; then
+    log_error "❌ Invalid commit range: $COMMIT_RANGE"
+    log_error "   This may happen when the 'before' commit doesn't exist in the current branch"
+    log_error "   (e.g., after a force push or rebase)"
+    exit 1
+  fi
+  
   # Get commits to validate
   commits=$(git rev-list "$COMMIT_RANGE" 2>/dev/null || true)
   
   if [[ -z "$commits" ]]; then
     log_error "❌ No commits found in range: $COMMIT_RANGE"
+    log_error "   The range exists but contains no commits"
     exit 1
   fi
   
