@@ -212,25 +212,44 @@ main() {
     echo "DEBUG: Validation result: '$result'"
     
     case "$result" in
-      "valid") ((valid_count++)) ;;
+      "valid") 
+        echo "DEBUG: Incrementing valid_count"
+        ((valid_count++)) 
+        echo "DEBUG: valid_count is now: $valid_count"
+        ;;
       "invalid") 
+        echo "DEBUG: Incrementing invalid_count"
         ((invalid_count++))
         validation_failed=true
+        echo "DEBUG: Set validation_failed=true"
         ;;
-      "bot") ((skipped_count++)) ;;
-      "chore") ((chore_count++)) ;;
+      "bot") 
+        echo "DEBUG: Incrementing skipped_count (bot)"
+        ((skipped_count++)) 
+        ;;
+      "chore") 
+        echo "DEBUG: Incrementing chore_count"
+        ((chore_count++)) 
+        ;;
+      *)
+        echo "DEBUG: Unexpected result: '$result'"
+        ;;
     esac
   done <<< "$commits"
   
   # Print summary
   echo ""
+  echo "DEBUG: About to print summary"
+  echo "DEBUG: valid_count=$valid_count, invalid_count=$invalid_count, validation_failed=$validation_failed"
   echo "📊 Validation Summary:"
   echo "  ✅ Valid commits: $valid_count"
   echo "  ❌ Invalid commits: $invalid_count"
   echo "  🤖 Skipped (bot users): $skipped_count"
   echo "  🔧 Skipped (chore commits): $chore_count"
   
+  echo "DEBUG: Checking if validation_failed=$validation_failed"
   if [[ "$validation_failed" == true ]]; then
+    echo "DEBUG: validation_failed is true, will exit 1"
     echo ""
     log_error "❌ Commit message validation failed!"
     echo ""
@@ -248,6 +267,7 @@ main() {
     echo ""
     exit 1
   else
+    echo "DEBUG: validation_failed is false, will exit 0"
     echo "✅ All commit messages are valid!"
     exit 0
   fi
