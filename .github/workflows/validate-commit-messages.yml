@@ -41,23 +41,17 @@ jobs:
         
         echo "Using commit range: $COMMIT_RANGE"
         echo "Commits to validate:"
-        git log --oneline "$COMMIT_RANGE"
+        git log --oneline "$COMMIT_RANGE" || echo "Failed to list commits in range"
+        
+        # Debug: Show environment info
+        echo "GitHub event: ${{ github.event_name }}"
+        echo "Before SHA: ${{ github.event.before }}"
+        echo "After SHA: ${{ github.event.after }}"
         
         # Ensure script is executable  
         chmod +x ./scripts/validate-commits.sh
         
-        # Run the validation script with proper error handling
-        set +e  # Don't exit on error so we can capture the exit code
+        # Run the validation script
+        echo "About to run validation..."
         ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose
-        VALIDATION_EXIT_CODE=$?
-        set -e  # Re-enable exit on error
-        
-        # Provide clear feedback on the result
-        if [ $VALIDATION_EXIT_CODE -eq 0 ]; then
-          echo "✅ Commit validation passed successfully"
-        else
-          echo "❌ Commit validation failed with exit code: $VALIDATION_EXIT_CODE"
-        fi
-        
-        # Exit with the actual validation exit code
-        exit $VALIDATION_EXIT_CODE
+        echo "✅ Validation completed successfully"
