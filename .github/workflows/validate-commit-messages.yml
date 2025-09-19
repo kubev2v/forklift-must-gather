@@ -16,42 +16,16 @@ jobs:
     
     - name: Validate commit messages
       run: |
-        # Determine commit range based on event type
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          # For PRs, validate commits in the PR
-          COMMIT_RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
-        else
-          # For pushes, determine the range carefully
-          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            # New branch, validate only the latest commit
-            COMMIT_RANGE="HEAD~1..HEAD"
-          else
-            # Check if the before SHA exists in the current repository
-            if git cat-file -e "${{ github.event.before }}" 2>/dev/null; then
-              # Before SHA exists, validate commits in this push
-              COMMIT_RANGE="${{ github.event.before }}..${{ github.event.after }}"
-            else
-              # Before SHA doesn't exist (force push), validate only the latest commit
-              echo "Warning: Before SHA ${{ github.event.before }} not found (likely force push)"
-              echo "Falling back to validating only the latest commit"
-              COMMIT_RANGE="HEAD~1..HEAD"
-            fi
-          fi
-        fi
+        # Simple approach: always validate just the latest commit for now
+        echo "Validating latest commit only..."
+        echo "Current HEAD: $(git rev-parse HEAD)"
+        echo "Latest commit message:"
+        git log -1 --pretty=format:"%B"
+        echo ""
+        echo "Running validation..."
         
-        echo "Using commit range: $COMMIT_RANGE"
-        echo "Commits to validate:"
-        git log --oneline "$COMMIT_RANGE" || echo "Failed to list commits in range"
-        
-        # Debug: Show environment info
-        echo "GitHub event: ${{ github.event_name }}"
-        echo "Before SHA: ${{ github.event.before }}"
-        echo "After SHA: ${{ github.event.after }}"
-        
-        # Ensure script is executable  
+        # Make script executable
         chmod +x ./scripts/validate-commits.sh
         
-        # Run the validation script
-        echo "About to run validation..."
-        ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose
-        echo "✅ Validation completed successfully"
+        # Run validation on just the latest commit
+        ./scripts/validate-commits.sh --range "HEAD~1..HEAD" --verbose
