@@ -137,6 +137,82 @@ format_commit_error() {
   esac
 }
 
+# Print detailed error information for invalid commits
+print_detailed_error() {
+  local commit="$1"
+  local author_name="$2"
+  local author_email="$3"
+  local commit_msg="$4"
+  local error_type="$5"
+  local description="$6"
+  
+  local short_sha=$(echo "$commit" | cut -c1-8)
+  local subject=$(echo "$commit_msg" | head -1)
+  
+  echo ""
+  echo "🚨 COMMIT VALIDATION FAILED"
+  echo "═══════════════════════════════════════════════════════════════"
+  echo "📋 Commit Details:"
+  echo "   SHA:     $short_sha"
+  echo "   Author:  $author_name <$author_email>"
+  echo "   Subject: $subject"
+  echo ""
+  
+  case "$error_type" in
+    "missing-description")
+      echo "❌ Problem: Missing commit description"
+      echo "   Your commit only has a subject line, but we require a description"
+      echo "   with a 'Resolves:' line."
+      echo ""
+      echo "🔧 How to fix:"
+      echo "   Add a description to your commit with one of these formats:"
+      echo "   • Resolves: MTV-<ticket-number>  (e.g., Resolves: MTV-123)"
+      echo "   • Resolves: None  (if no ticket is associated)"
+      echo ""
+      echo "   To fix this commit:"
+      echo "   git commit --amend -m \"$subject"
+      echo ""
+      echo "   <Add your description here>"
+      echo ""
+      echo "   Resolves: MTV-XXXX\""
+      ;;
+    "invalid-format")
+      echo "❌ Problem: Invalid 'Resolves:' format"
+      echo "   Found: $description"
+      echo ""
+      echo "🔧 How to fix:"
+      echo "   Replace the description line with one of these exact formats:"
+      echo "   • Resolves: MTV-<number>  (e.g., Resolves: MTV-123)"
+      echo "   • Resolves: None  (if no ticket)"
+      echo ""
+      echo "   To fix this commit:"
+      echo "   git commit --amend -m \"$subject"
+      echo ""
+      echo "   <Keep your existing description>"
+      echo ""
+      echo "   Resolves: MTV-XXXX\""
+      echo ""
+      echo "   Or if no ticket:"
+      echo "   git commit --amend -m \"$subject"
+      echo ""
+      echo "   <Keep your existing description>"
+      echo ""
+      echo "   Resolves: None\""
+      ;;
+  esac
+  
+  echo ""
+  echo "📖 More examples:"
+  echo "   git commit -m \"Fix user authentication bug"
+  echo ""
+  echo "   Updated the login validation to handle edge cases properly."
+  echo "   This resolves issues with special characters in passwords."
+  echo ""
+  echo "   Resolves: MTV-456\""
+  echo ""
+  echo "═══════════════════════════════════════════════════════════════"
+}
+
 # Process a single commit
 process_commit() {
   local commit="$1"
