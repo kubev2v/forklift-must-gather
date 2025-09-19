@@ -40,33 +40,24 @@ jobs:
         fi
         
         echo "Using commit range: $COMMIT_RANGE"
+        echo "Commits to validate:"
+        git log --oneline "$COMMIT_RANGE"
         
         # Ensure script is executable  
         chmod +x ./scripts/validate-commits.sh
         
-        # Run the validation script with enhanced debugging
-        echo "DEBUG: About to run validation script"
-        echo "DEBUG: Script exists: $(ls -la ./scripts/validate-commits.sh)"
-        echo "DEBUG: Script permissions: $(stat -c '%a' ./scripts/validate-commits.sh 2>/dev/null || stat -f '%A' ./scripts/validate-commits.sh)"
-        
-        # Show what commits we're actually validating
-        echo "DEBUG: Commits in range:"
-        git log --oneline "$COMMIT_RANGE"
-        
-        # Test the script with a simple operation first
-        echo "DEBUG: Testing script basic functionality..."
-        ./scripts/validate-commits.sh --help || echo "Help command failed"
-        
-        # Run the script and capture both stdout and stderr
-        echo "DEBUG: Running validation script..."
+        # Run the validation script with proper error handling
         set +e  # Don't exit on error so we can capture the exit code
-        ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose 2>&1 | tee validation_output.log
+        ./scripts/validate-commits.sh --range "$COMMIT_RANGE" --verbose
         VALIDATION_EXIT_CODE=$?
         set -e  # Re-enable exit on error
         
-        echo "DEBUG: Validation exit code: $VALIDATION_EXIT_CODE"
-        echo "DEBUG: Validation output:"
-        cat validation_output.log
+        # Provide clear feedback on the result
+        if [ $VALIDATION_EXIT_CODE -eq 0 ]; then
+          echo "✅ Commit validation passed successfully"
+        else
+          echo "❌ Commit validation failed with exit code: $VALIDATION_EXIT_CODE"
+        fi
         
         # Exit with the actual validation exit code
         exit $VALIDATION_EXIT_CODE
