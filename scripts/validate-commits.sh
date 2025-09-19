@@ -3,7 +3,7 @@
 # Standalone script to validate commit messages
 # Can be used locally or by GitHub Actions
 
-set -euo pipefail
+set -e
 
 # Configuration
 readonly BOT_PATTERNS=("dependabot" "renovate" "bot" "ci" "github-actions" "automated")
