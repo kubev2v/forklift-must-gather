@@ -6,8 +6,8 @@
 set -e
 
 # Configuration
-readonly BOT_PATTERNS=("dependabot" "renovate" "bot" "ci" "github-actions" "automated")
-readonly MTV_PATTERN="^Resolves: MTV-[0-9]+$"
+readonly BOT_PATTERNS=("dependabot" "renovate" "bot" "github-actions" "automated" "^ci$" "^ci-" "-ci$" "-ci-" "\\.ci\\." "@ci\\." "ci@")
+readonly MTV_PATTERN="^Resolves: MTV-[0-9]+(( MTV-[0-9]+)|(, ?MTV-[0-9]+)|( and MTV-[0-9]+)|(, and MTV-[0-9]+))*$"
 readonly NONE_PATTERN="^Resolves: None$"
 
 # Default values
@@ -70,7 +70,10 @@ is_bot_user() {
   local name="$2"
   
   for pattern in "${BOT_PATTERNS[@]}"; do
-    if [[ "$email" =~ $pattern ]] || [[ "$name" =~ $pattern ]]; then
+    # Convert email and name to lowercase for case-insensitive matching
+    local email_lower=$(echo "$email" | tr '[:upper:]' '[:lower:]')
+    local name_lower=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+    if [[ "$email_lower" =~ $pattern ]] || [[ "$name_lower" =~ $pattern ]]; then
       return 0
     fi
   done
@@ -80,7 +83,7 @@ is_bot_user() {
 # Check if commit is a chore
 is_chore_commit() {
   local message="$1"
-  echo "$message" | grep -qi "chore"
+  echo "$message" | grep -qiE "chore\(|chore:"
 }
 
 # Extract commit description (look for Resolves: line anywhere in commit)
@@ -136,10 +139,13 @@ print_detailed_error() {
       echo "   Your commit only has a subject line, but we require a description"
       echo "   with a 'Resolves:' line."
       echo ""
-      echo "🔧 How to fix:"
-      echo "   Add a description to your commit with one of these formats:"
-      echo "   • Resolves: MTV-<ticket-number>  (e.g., Resolves: MTV-123)"
-      echo "   • Resolves: None  (if no ticket is associated)"
+    echo "🔧 How to fix:"
+    echo "   Add a description to your commit with one of these formats:"
+    echo "   • Resolves: MTV-<ticket-number>  (e.g., Resolves: MTV-123)"
+    echo "   • Resolves: MTV-<num1> MTV-<num2>  (e.g., Resolves: MTV-123 MTV-456)"
+    echo "   • Resolves: MTV-<num1>, MTV-<num2>  (e.g., Resolves: MTV-123, MTV-456)"
+    echo "   • Resolves: MTV-<num1> and MTV-<num2>  (e.g., Resolves: MTV-123 and MTV-456)"
+    echo "   • Resolves: None  (if no ticket is associated)"
       echo ""
       echo "   To fix this commit:"
       echo "   git commit --amend -m \"$subject"
@@ -155,6 +161,9 @@ print_detailed_error() {
       echo "🔧 How to fix:"
       echo "   Replace the description line with one of these exact formats:"
       echo "   • Resolves: MTV-<number>  (e.g., Resolves: MTV-123)"
+      echo "   • Resolves: MTV-<num1> MTV-<num2>  (e.g., Resolves: MTV-123 MTV-456)"
+      echo "   • Resolves: MTV-<num1>, MTV-<num2>  (e.g., Resolves: MTV-123, MTV-456)"
+      echo "   • Resolves: MTV-<num1> and MTV-<num2>  (e.g., Resolves: MTV-123 and MTV-456)"
       echo "   • Resolves: None  (if no ticket)"
       echo ""
       echo "   To fix this commit:"
@@ -327,11 +336,14 @@ main() {
     echo ""
     echo "📋 Required format in commit description:"
     echo "   • Resolves: MTV-<number>  (e.g., MTV-123, MTV-4567)"
+    echo "   • Resolves: MTV-<num1> MTV-<num2>  (e.g., MTV-123 MTV-456)"
+    echo "   • Resolves: MTV-<num1>, MTV-<num2>  (e.g., MTV-123, MTV-456)"
+    echo "   • Resolves: MTV-<num1> and MTV-<num2>  (e.g., MTV-123 and MTV-456)"
     echo "   • Resolves: None  (if no ticket associated)"
     echo ""
     echo "🚫 These commits are automatically skipped:"
     echo "   • Bot users (dependabot, renovate, github-actions, etc.)"
-    echo "   • Commits with 'chore' in the message"
+    echo "   • Commits with 'chore(' or 'chore:' format in the message"
     echo ""
     echo "❓ Need help? Check the detailed errors above for specific fixes."
     echo "════════════════════════════════════════════════════════════════"
