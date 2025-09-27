@@ -15,7 +15,7 @@ docker-build:
 docker-push:
 	${CONTAINER_ENGINE} push ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
 
-.PHONY: build docker-build docker-push
+.PHONY: build docker-build docker-push validate-commits validate-commits-range
 
 prometheus-run: prometheus-cleanup-container prometheus-load-dump
 	${CONTAINER_ENGINE} run -d \
@@ -42,3 +42,11 @@ prometheus-cleanup: prometheus-cleanup-container prometheus-cleanup-data
 
 prometheus-check-archive-file:
 	test -f "${PROMETHEUS_DUMP_PATH}" || (echo "Error: Prometheus archive file does not exist. Specify valid file in PROMETHEUS_DUMP_PATH environment variable."; exit 1)
+
+validate-commits:
+	@echo "Validating commit messages..."
+	@./scripts/validate-commits.sh --verbose
+
+validate-commits-range:
+	@echo "Validating commit messages in range: $(RANGE)"
+	@./scripts/validate-commits.sh --range "$(RANGE)" --verbose

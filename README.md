@@ -118,6 +118,68 @@ Some objects (pods logs or CRs) might be missing in case of failed migration or 
 Log files which are empty (e.g. no content in pod log or empty result after applying filter) are omitted from the must-gather archive.
 
 ## Development
+
+### Commit Message Format
+
+All commits must include one of these formats in the **commit description** (the body of the commit message):
+
+**Primary format**: `Resolves: MTV-<number>`
+
+Example commit:
+```
+Subject: Fix bug in data processing
+Description: Resolves: MTV-123
+```
+
+**Exclusion format**: `Resolves: None`
+
+Example commit:
+```
+Subject: Update documentation
+Description: Resolves: None
+```
+
+**Chore commits**: Any commit containing "chore" in the message (case insensitive) is automatically skipped.
+
+Example chore commits:
+```
+chore: update dependencies
+CHORE: clean up build files
+Update dependencies and chore tasks
+```
+
+**Note**: The commit description validation is enforced via a GitHub Action that runs on all branches for push and pull request events. The validation automatically skips:
+- Bot users (dependabot, renovate, ci, github-actions, etc.)
+- Commits containing "chore" in the message (case insensitive)
+
+### Local Validation
+
+You can validate commit messages locally using the provided script or Makefile targets:
+
+**Using the script directly:**
+```bash
+# Validate the latest commit
+./scripts/validate-commits.sh
+
+# Validate a range of commits
+./scripts/validate-commits.sh --range HEAD~5..HEAD
+
+# Validate with verbose output
+./scripts/validate-commits.sh --verbose
+
+# Get help
+./scripts/validate-commits.sh --help
+```
+
+**Using Makefile targets:**
+```bash
+# Validate the latest commit
+make validate-commits
+
+# Validate a specific range of commits
+make validate-commits-range RANGE="HEAD~5..HEAD"
+```
+
 You can build the image locally using the Dockerfile included.
 
 A `Makefile` is also provided. To use it, you must pass a repository via the command-line using the variable `IMAGE_NAME`.
