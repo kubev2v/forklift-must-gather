@@ -39,7 +39,6 @@ jobs:
           fi
         fi
         
-        echo "Validating commits in range: $COMMIT_RANGE"
         
         # Make script executable and run validation
         chmod +x ./scripts/validate-commits.sh
