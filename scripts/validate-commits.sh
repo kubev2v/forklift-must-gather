@@ -112,8 +112,8 @@ validate_description() {
   echo "$description" | grep -qE "$MTV_PATTERN|$NONE_PATTERN"
 }
 
-# Print detailed error information for invalid commits
-print_detailed_error() {
+# Format error information for invalid commits (returns formatted string)
+format_commit_error() {
   local commit="$1"
   local author_name="$2"
   local author_email="$3"
@@ -124,41 +124,17 @@ print_detailed_error() {
   local short_sha=$(echo "$commit" | cut -c1-8)
   local subject=$(echo "$commit_msg" | head -1)
   
-  echo ""
-  echo "🚨 COMMIT VALIDATION FAILED"
-  echo "═══════════════════════════════════════════════════════════════"
-  echo "📋 Commit Details:"
-  echo "   SHA:     $short_sha"
-  echo "   Author:  $author_name <$author_email>"
+  echo "📋 Commit: $short_sha - $author_name"
   echo "   Subject: $subject"
-  echo ""
   
   case "$error_type" in
     "missing-description")
-      echo "❌ Problem: Missing commit description"
-      echo "   Your commit needs a description with a 'Resolves:' line."
-      echo ""
-      echo "🔧 Quick fix:"
-      echo "   git commit --amend -m \"$subject"
-      echo ""
-      echo "   <Add your description here>"
-      echo ""
-      echo "   Resolves: MTV-XXXX\""
+      echo "   ❌ Missing commit description with 'Resolves:' line"
       ;;
     "invalid-format")
-      echo "❌ Problem: Invalid 'Resolves:' format"
-      echo "   Found: $description"
-      echo ""
-      echo "🔧 Quick fix:"
-      echo "   git commit --amend"
-      echo "   # Replace with: Resolves: MTV-XXXX (or Resolves: None)"
+      echo "   ❌ Invalid 'Resolves:' format: $description"
       ;;
   esac
-  
-  echo ""
-  echo "📖 For detailed examples and help, see: COMMIT_MESSAGE_GUIDE.md"
-  echo ""
-  echo "═══════════════════════════════════════════════════════════════"
 }
 
 # Process a single commit
@@ -191,7 +167,7 @@ process_commit() {
   description=$(extract_description "$commit_msg")
   
   if [[ -z "$description" ]]; then
-    print_detailed_error "$commit" "$author_name" "$author_email" "$commit_msg" "missing-description"
+    format_commit_error "$commit" "$author_name" "$author_email" "$commit_msg" "missing-description"
     echo "invalid"
     return
   fi
@@ -200,7 +176,7 @@ process_commit() {
     log_verbose "✅ Commit $commit: Valid format"
     echo "valid"
   else
-    print_detailed_error "$commit" "$author_name" "$author_email" "$commit_msg" "invalid-format" "$description"
+    format_commit_error "$commit" "$author_name" "$author_email" "$commit_msg" "invalid-format" "$description"
     echo "invalid"
   fi
 }
@@ -243,6 +219,9 @@ main() {
     fi
   fi
   
+  # Collect all validation errors
+  local error_details=""
+  
   # Process each commit
   while IFS= read -r commit; do
     [[ -n "$commit" ]] || continue
@@ -252,11 +231,6 @@ main() {
     output=$(process_commit "$commit" 2>&1)
     result=$(echo "$output" | tail -1)
     
-    # Show detailed errors immediately
-    if [[ "$result" == "invalid" ]]; then
-      echo "$output" | sed '$d'  # Show everything except the last line (result)
-    fi
-    
     case "$result" in
       "valid") 
         valid_count=$((valid_count + 1))
@@ -264,6 +238,15 @@ main() {
       "invalid") 
         invalid_count=$((invalid_count + 1))
         validation_failed=true
+        # Collect error details (everything except the last line which is the result)
+        local error_output=$(echo "$output" | sed '$d')
+        if [[ -n "$error_details" ]]; then
+          error_details="$error_details
+
+$error_output"
+        else
+          error_details="$error_output"
+        fi
         ;;
       "bot") 
         skipped_count=$((skipped_count + 1))
@@ -273,6 +256,17 @@ main() {
         ;;
     esac
   done <<< "$commits"
+  
+  # Display consolidated error report if there are validation failures
+  if [[ "$validation_failed" == true ]]; then
+    echo ""
+    echo "🚨 COMMIT VALIDATION FAILED"
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "$error_details"
+    echo ""
+    echo "📖 For detailed examples and help, see: COMMIT_MESSAGE_GUIDE.md"
+    echo "═══════════════════════════════════════════════════════════════"
+  fi
   
   # Print summary
   echo ""
