@@ -7,13 +7,13 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: 'false'
     pipelinesascode.tekton.dev/max-keep-runs: '3'
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch == "main"
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch == "release-2.10"
   creationTimestamp:
   labels:
-    appstudio.openshift.io/application: forklift-operator-dev-preview
-    appstudio.openshift.io/component: forklift-must-gather-dev-preview
+    appstudio.openshift.io/application: forklift-operator-2-10
+    appstudio.openshift.io/component: forklift-must-gather-2-10
     pipelines.appstudio.openshift.io/type: build
-  name: forklift-must-gather-dev-preview-on-push
+  name: forklift-must-gather-2-10-on-push
   namespace: rh-mtv-1-tenant
 spec:
   params:
@@ -22,7 +22,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/rh-mtv-1-tenant/forklift-operator-dev-preview/forklift-must-gather-dev-preview:{{revision}}
+    value: quay.io/redhat-user-workloads/rh-mtv-1-tenant/forklift-operator-2-10/forklift-must-gather-2-10:{{revision}}
   - name: dockerfile
     value: build/Dockerfile-downstream
   - name: path-context
@@ -604,7 +604,7 @@ spec:
     - name: netrc
       optional: true
   taskRunTemplate:
-    serviceAccountName: build-pipeline-forklift-must-gather-dev-preview
+    serviceAccountName: build-pipeline-forklift-must-gather-2-10
   workspaces:
   - name: git-auth
     secret:
