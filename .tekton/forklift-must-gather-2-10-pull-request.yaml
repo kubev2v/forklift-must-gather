@@ -263,8 +263,6 @@ spec:
       - name: IMAGES
         value:
         - $(tasks.build-container.results.IMAGE_URL)@$(tasks.build-container.results.IMAGE_DIGEST)
-      - name: BUILDAH_FORMAT
-        value: $(params.buildah-format)
       runAfter:
       - build-container
       taskRef:
