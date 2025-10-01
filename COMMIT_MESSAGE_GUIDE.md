@@ -6,9 +6,21 @@ This guide explains how to write valid commit messages for this repository and h
 
 All commit messages must include a description with a `Resolves:` line in one of these formats:
 
+> **Note:** This validation supports any issue tracking system that uses the `PREFIX-NUMBER` format (e.g., MTV-123, DPP-17811, CCSINTL-298, JIRA-456, etc.). The PREFIX must be uppercase letters and NUMBER must be digits.
+
 ### Single Issue
 ```
 Resolves: MTV-123
+Resolves: DPP-17811
+Resolves: CCSINTL-298
+Resolves: JIRA-456
+```
+
+### Single Issue with Description
+```
+Resolves: MTV-3111 | Add validations for VDDK and RCM
+Resolves: DPP-17811 | Fix authentication bug
+Resolves: CCSINTL-298 | Update payment processing
 ```
 
 ### Multiple Issues (Choose ONE separator style)
@@ -16,20 +28,25 @@ Resolves: MTV-123
 **Space-separated:**
 ```
 Resolves: MTV-123 MTV-456
-Resolves: MTV-123 MTV-456 MTV-789
+Resolves: DPP-17811 DPP-17812
+Resolves: MTV-123 DPP-456 CCSINTL-789
+Resolves: MTV-123 MTV-456 | Fix multiple authentication issues
 ```
 
 **Comma-separated:**
 ```
 Resolves: MTV-123, MTV-456
-Resolves: MTV-123,MTV-456
-Resolves: MTV-123, MTV-456, MTV-789
+Resolves: DPP-17811,CCSINTL-298
+Resolves: MTV-123, DPP-456, CCSINTL-789
+Resolves: MTV-123, MTV-456 | Authentication and authorization fixes
 ```
 
 **"And" separated:**
 ```
 Resolves: MTV-123 and MTV-456
-Resolves: MTV-123 and MTV-456 and MTV-789
+Resolves: DPP-17811 and CCSINTL-298
+Resolves: MTV-123 and DPP-456 and CCSINTL-789
+Resolves: MTV-123 and MTV-456 | Complete authentication system overhaul
 ```
 
 ### No Associated Ticket
@@ -39,10 +56,13 @@ Resolves: None
 
 ## Important Rules
 
-- **Do NOT mix separator styles** in the same line (e.g., `MTV-123, MTV-456 and MTV-789` is invalid)
-- Issue numbers must be numeric (e.g., `MTV-abc` is invalid)
-- Case matters: use `MTV-` not `mtv-`
+- **Do NOT mix separator styles** in the same line (e.g., `MTV-123, MTV-456 and DPP-789` is invalid)
+- Issue numbers must be numeric (e.g., `MTV-abc` or `DPP-xyz` is invalid)
+- Issue prefixes must be uppercase (e.g., use `MTV-123` not `mtv-123`)
+- Issue format: `PREFIX-NUMBER` where PREFIX is uppercase letters and NUMBER is digits
 - The `Resolves:` line can appear anywhere in the commit message body
+- You can mix different issue types in the same line (e.g., `MTV-123 DPP-456`)
+- Optional descriptions can be added after ` | ` (pipe with spaces): `Resolves: MTV-123 | Description`
 
 ## Example Valid Commit Messages
 
@@ -61,7 +81,16 @@ Add new dashboard features
 Implemented user dashboard with analytics and reporting.
 Added export functionality and improved UI responsiveness.
 
-Resolves: MTV-123, MTV-124, MTV-125
+Resolves: DPP-17811, CCSINTL-298, MTV-125
+```
+
+```
+Integrate payment processing system
+
+Connected the new payment gateway and updated checkout flow.
+Fixed currency conversion issues for international users.
+
+Resolves: DPP-17811 and CCSINTL-298 | Payment system integration
 ```
 
 ```
@@ -69,6 +98,17 @@ chore: update dependencies
 
 Resolves: None
 ```
+
+## Supported Issue Tracking Systems
+
+This validation works with any issue tracking system that follows the `PREFIX-NUMBER` format:
+
+- **MTV**: MTV-123, MTV-4567
+- **DPP**: DPP-17811, DPP-20001
+- **CCSINTL**: CCSINTL-298, CCSINTL-1000
+- **JIRA**: JIRA-456, JIRA-789
+- **GitHub Issues**: GH-123, ISSUE-456
+- **Custom prefixes**: Any uppercase letters followed by dash and numbers
 
 ## Automatically Skipped Commits
 
@@ -114,9 +154,10 @@ Resolves: MTV-XXXX"
 
 **Examples of invalid formats:**
 - `Resolves: MTV-` (missing number)
-- `Resolves: mtv-123` (lowercase)
-- `Resolves: MTV-123, MTV-456 and MTV-789` (mixed separators)
-- `Resolves: MTV-123 JIRA-456` (mixed ticket systems)
+- `Resolves: mtv-123` (lowercase prefix)
+- `Resolves: MTV-abc` (non-numeric issue number)
+- `Resolves: MTV-123, MTV-456 and DPP-789` (mixed separators)
+- `Resolves: 123-MTV` (wrong format - number before prefix)
 
 **Solution:** Replace with a valid format from the examples above.
 
