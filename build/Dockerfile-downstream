@@ -13,10 +13,11 @@ ENTRYPOINT ["/usr/bin/gather"]
 ARG VERSION
 ARG REGISTRY
 ARG REVISION
+ARG CPE
 
 LABEL \
     com.redhat.component="mtv-must-gather-container" \
-    cpe="cpe:/a:redhat:migration_toolkit_virtualization:2.9::el8" \
+    cpe="cpe:/a:redhat:migration_toolkit_virtualization:${CPE}::el8" \
     version="$VERSION" \
     name="${REGISTRY}/mtv-must-gather-rhel8" \
     license="Apache License 2.0" \
