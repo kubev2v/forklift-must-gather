@@ -137,8 +137,8 @@ format_commit_error() {
   esac
 }
 
-# Print detailed error information for invalid commits
-print_detailed_error() {
+# Format error information for invalid commits (returns formatted string)
+format_commit_error() {
   local commit="$1"
   local author_name="$2"
   local author_email="$3"
@@ -149,41 +149,17 @@ print_detailed_error() {
   local short_sha=$(echo "$commit" | cut -c1-8)
   local subject=$(echo "$commit_msg" | head -1)
   
-  echo ""
-  echo "🚨 COMMIT VALIDATION FAILED"
-  echo "═══════════════════════════════════════════════════════════════"
-  echo "📋 Commit Details:"
-  echo "   SHA:     $short_sha"
-  echo "   Author:  $author_name <$author_email>"
+  echo "📋 Commit: $short_sha - $author_name"
   echo "   Subject: $subject"
-  echo ""
   
   case "$error_type" in
     "missing-description")
-      echo "❌ Problem: Missing commit description"
-      echo "   Your commit needs a description with a 'Resolves:' line."
-      echo ""
-      echo "🔧 Quick fix:"
-      echo "   git commit --amend -m \"$subject"
-      echo ""
-      echo "   <Add your description here>"
-      echo ""
-      echo "   Resolves: MTV-XXXX\""
+      echo "   ❌ Missing commit description with 'Resolves:' line"
       ;;
     "invalid-format")
-      echo "❌ Problem: Invalid 'Resolves:' format"
-      echo "   Found: $description"
-      echo ""
-      echo "🔧 Quick fix:"
-      echo "   git commit --amend"
-      echo "   # Replace with: Resolves: MTV-XXXX (or Resolves: None)"
+      echo "   ❌ Invalid 'Resolves:' format: $description"
       ;;
   esac
-  
-  echo ""
-  echo "📖 For detailed examples and help, see: COMMIT_MESSAGE_GUIDE.md"
-  echo ""
-  echo "═══════════════════════════════════════════════════════════════"
 }
 
 # Process a single commit
