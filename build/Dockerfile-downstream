@@ -1,3 +1,5 @@
+FROM quay.io/konflux-ci/yq as test
+
 FROM registry.redhat.io/openshift4/ose-cli:v4.15.0-202503170806.p0.g8231637.assembly.stream.el8
 
 WORKDIR /app
