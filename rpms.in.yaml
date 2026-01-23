@@ -1,6 +1,5 @@
 packages:
   - findutils
-  - graphviz
   - jq
   - rsync
   - tar
