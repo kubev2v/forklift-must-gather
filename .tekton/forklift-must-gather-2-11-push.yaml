@@ -25,9 +25,20 @@ spec:
   - name: output-image
     value: quay.io/redhat-user-workloads/rh-mtv-1-tenant/forklift-operator-2-11/forklift-must-gather-2-11:{{revision}}
   - name: dockerfile
-    value: Dockerfile
+    value: build/Dockerfile-downstream
   - name: path-context
     value: .
+  - name: build-source-image
+    value: 'true'
+  - name: hermetic
+    value: "true"
+  - name: prefetch-input
+    value: '[{"type": "rpm", "path": "."}]'
+  - name: build-args-file
+    value: build/release.conf
+  - name: build-args
+    value:
+    - REVISION={{revision}}
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
@@ -177,6 +188,10 @@ spec:
         value: $(params.output-image).prefetch
       - name: ociArtifactExpiresAfter
         value: $(params.image-expires-after)
+      - name: dev-package-managers
+        value: 'true'
+      - name: ACTIVATION_KEY
+        value: activation-key-rhel8
       runAfter:
       - clone-repository
       taskRef:
