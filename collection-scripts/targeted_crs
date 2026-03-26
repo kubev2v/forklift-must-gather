@@ -165,7 +165,56 @@ if [ ! -z "${vm_resources}" ]; then
         # Store VM in list to allow virt-launcher pod logs gathering
         echo "${target_ns},${target_vm_name},${target_vm_id}" >> /tmp/target_vms
       else
-        echo "VirtualMachine ${target_vm_name} doesn't exist in ${target_ns} namespace, skipping."
+        echo "VirtualMachine ${target_vm_name} doesn't exist in ${target_ns} namespace, collecting resources from plan status."
+
+        # Even without a VM CR, collect DVs, PVCs, and migration data from the plan status.
+        # During the populate phase, VMs don't exist yet but DVs, PVCs, and populate pods do.
+        # Namespace-wide collection only needs to happen once, tracked via /tmp/ns_collected.
+        if [ ! -f /tmp/ns_collected ]; then
+          migration_uid=""
+          for plan_id in ${plan_resources[@]}; do
+            migration_uid=$(/usr/bin/oc get plan $plan_id -n ${target_ns} -o jsonpath='{.status.migration.history[0].migration.uid}' 2>/dev/null)
+            if [ ! -z "$migration_uid" ]; then
+              log_filter_query="$log_filter_query|$migration_uid"
+              echo ${migration_uid} >> /tmp/migrations
+              break
+            fi
+          done
+
+          if [ ! -z "$migration_uid" ]; then
+            # Collect PVCs and DVs scoped by migration label
+            for pvc_name in $(/usr/bin/oc get pvc --no-headers -n ${target_ns} --selector migration=$migration_uid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null); do
+              log_filter_query="$log_filter_query|$pvc_name"
+              dump_resource "persistentvolumeclaim" $pvc_name $target_ns
+              echo "${target_ns},${pvc_name}" >> /tmp/pvcs
+            done
+
+            for dv_name in $(/usr/bin/oc get datavolume --no-headers -n ${target_ns} --selector migration=$migration_uid -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null); do
+              dump_resource "datavolume" $dv_name $target_ns
+              echo "${target_ns},${dv_name}" >> /tmp/dvs
+            done
+          fi
+
+          # Fallback: if no migration-scoped resources found, collect all PVCs and DVs in the namespace
+          if [ ! -s /tmp/pvcs ]; then
+            for pvc_name in $(/usr/bin/oc get pvc --no-headers -n ${target_ns} -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null); do
+              log_filter_query="$log_filter_query|$pvc_name"
+              dump_resource "persistentvolumeclaim" $pvc_name $target_ns
+              echo "${target_ns},${pvc_name}" >> /tmp/pvcs
+            done
+
+            for dv_name in $(/usr/bin/oc get datavolume --no-headers -n ${target_ns} -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null); do
+              dump_resource "datavolume" $dv_name $target_ns
+              echo "${target_ns},${dv_name}" >> /tmp/dvs
+            done
+          fi
+
+          # Store target namespace for targeted_logs fallback
+          echo ${target_ns} > /tmp/target_ns
+          touch /tmp/ns_collected
+        fi
+
+        log_filter_query="$log_filter_query|$target_vm_name"
       fi
     done
 fi
@@ -176,10 +225,10 @@ if [ -z $plan_resources ] && [ -z $vm_resources ] && [ -z $dv_resources ]; then
   exit 1
 fi
 
-# Show message for zero valid VMs without Plan of resources actually existing in the cluster
+# Show message for zero valid VMs without Plan of resources actually existing in the cluster.
+# This is not an error when VMs don't exist yet (e.g. during populate phase).
 if [ -z $plan_resources ] && [ -z $present_vm_resources ]; then
-  echo "ERROR: No existing VMs were found in the cluster."
-  exit 1
+  echo "WARNING: No existing VMs were found in the cluster. Resources may still be collected from plan status."
 fi
 
 # Store condition for logs filtering

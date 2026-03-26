@@ -85,6 +85,25 @@ for nsvm in ${target_vms[@]}; do
   done
 done
 
+# Collect populate pod logs directly from migration labels when VMs don't exist yet.
+# During the populate phase, VMs are not created but populate pods are running.
+if [[ -z "${target_vms}" && ! -z "${target_migrations}" ]]; then
+  target_ns="$(touch /tmp/target_ns; cat /tmp/target_ns)"
+  if [[ ! -z "${target_ns}" ]]; then
+    echo "No target VMs found, collecting populate pods directly from migration labels..."
+    for migration in ${target_migrations[@]}; do
+      read migration_id <<< $migration
+      for populatorPod in $(oc get pods --no-headers -n $target_ns --selector migration=$migration_id,pvcName -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null); do
+        object_collection_path="/must-gather/namespaces/${target_ns}/logs/${populatorPod}"
+        mkdir -p ${object_collection_path}
+        echo "[ns=${target_ns}][pod=${populatorPod}] Collecting Populator Pod logs (no VM)..."
+        /usr/bin/oc logs --all-containers --namespace ${target_ns} ${populatorPod} &> "${object_collection_path}/current.log" &
+        pwait $max_parallelism
+      done
+    done
+  fi
+fi
+
 # Collect CDI/importer pod logs for imported DVs
 for nsdv in ${target_dvs[@]}; do
   IFS="," read ns dv <<< $nsdv
