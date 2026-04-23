@@ -41,6 +41,30 @@ VM name together with namespace where the VM belongs to
 oc adm must-gather --image=quay.io/kubev2v/forklift-must-gather:latest -- NS=ns1 VM=vm-3345 /usr/bin/targeted
 ```
 
+### Time-based log filtering
+
+To limit the amount of collected log data, you can restrict logs to a specific time window. This is useful when collecting logs from long-running pods (e.g. `forklift-controller`) where only recent logs are relevant.
+
+Collect logs from the last 2 hours:
+
+```sh
+oc adm must-gather --image=quay.io/kubev2v/forklift-must-gather:latest -- MUST_GATHER_SINCE=2h /usr/bin/gather
+```
+
+Collect logs since a specific timestamp (RFC 3339 format):
+
+```sh
+oc adm must-gather --image=quay.io/kubev2v/forklift-must-gather:latest -- MUST_GATHER_SINCE_TIME=2024-04-22T10:00:00Z /usr/bin/gather
+```
+
+These parameters also work with targeted gathering:
+
+```sh
+oc adm must-gather --image=quay.io/kubev2v/forklift-must-gather:latest -- MUST_GATHER_SINCE=2h NS=ns1 PLAN=plan1 /usr/bin/targeted
+```
+
+When both `MUST_GATHER_SINCE` and `MUST_GATHER_SINCE_TIME` are set, `MUST_GATHER_SINCE_TIME` takes precedence. When neither is set, all available logs are collected.
+
 ### Gathered CRs detailed
 
 Custom Resource | Description, identification field | Selection process for NS | Selection process for Plan | Selection process for VM

@@ -1,5 +1,7 @@
 #!/bin/bash
 source pwait
+source common.sh
+get_log_collection_args
 max_parallelism=10
 
 # Namespaces passed in from main gather
@@ -11,9 +13,9 @@ for ns in ${namespaces[@]}; do
     object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
     mkdir -p ${object_collection_path}
     echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
     echo "[ns=${ns}][pod=${pod}] Collecting previous Pod logs..."
-    /usr/bin/oc logs --previous --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/previous.log" &
+    /usr/bin/oc logs ${log_collection_args} --previous --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/previous.log" &
     pwait $max_parallelism
   done
 done
@@ -25,9 +27,9 @@ for plan in $(/usr/bin/oc get plan --no-headers --all-namespaces -o go-template=
     object_collection_path="/must-gather/namespaces/${targetNs}/logs/${pod}"
     mkdir -p ${object_collection_path}
     echo "[ns=${targetNs}][pod=${pod}] Collecting Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${targetNs} ${pod} &> "${object_collection_path}/current.log" &
+    /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${targetNs} ${pod} &> "${object_collection_path}/current.log" &
     echo "[ns=${targetNs}][pod=${pod}] Collecting previous Pod logs..."
-    /usr/bin/oc logs --previous --all-containers --namespace ${targetNs} ${pod} &> "${object_collection_path}/previous.log" &
+    /usr/bin/oc logs ${log_collection_args} --previous --all-containers --namespace ${targetNs} ${pod} &> "${object_collection_path}/previous.log" &
     pwait $max_parallelism
   done
 done
@@ -39,9 +41,9 @@ for component in cdi vm-import; do
     object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
     mkdir -p ${object_collection_path}
     echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
     echo "[ns=${ns}][pod=${pod}] Collecting previous Pod logs..."
-    /usr/bin/oc logs --previous --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/previous.log" &
+    /usr/bin/oc logs ${log_collection_args} --previous --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/previous.log" &
     pwait $max_parallelism
   done
 done
@@ -52,7 +54,7 @@ for nspod in $(oc get pods --no-headers --all-namespaces --selector kubevirt.io=
   object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
   mkdir -p ${object_collection_path}
   echo "[ns=${ns}][pod=${pod}] Collecting launcher Pod logs..."
-  /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+  /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
   pwait $max_parallelism
 done
 

@@ -9,6 +9,8 @@
 
 unset KUBECONFIG
 source pwait
+source common.sh
+get_log_collection_args
 max_parallelism=10
 
 # Namespaces passed in from main gather
@@ -26,7 +28,7 @@ for ns in ${namespaces[@]}; do
     object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
     mkdir -p ${object_collection_path}
     echo "[ns=${ns}][pod=${pod}] Collecting Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
+    /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   done
 done
@@ -38,7 +40,7 @@ for component in cdi vm-import; do
     object_collection_path="/must-gather/namespaces/openshift-cnv/logs/${pod}"
     mkdir -p ${object_collection_path}
     echo "[ns=openshift-cnv][pod=${pod}] Collecting Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace openshift-cnv ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
+    /usr/bin/oc logs ${log_collection_args} --all-containers --namespace openshift-cnv ${pod} | grep -E $targeted_query &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   done
 done
@@ -54,7 +56,7 @@ for nsvm in ${target_vms[@]}; do
     object_collection_path="/must-gather/namespaces/${ns}/logs/${virtLauncherPod}"
     mkdir -p ${object_collection_path}
     echo "[ns=${ns}][pod=${virtLauncherPod}] Collecting virt-launcher Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${virtLauncherPod} &> "${object_collection_path}/current.log" &
+    /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${virtLauncherPod} &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   fi
 
@@ -68,7 +70,7 @@ for nsvm in ${target_vms[@]}; do
       object_collection_path="/must-gather/namespaces/${ns}/logs/${virtV2VPod}"
       mkdir -p ${object_collection_path}
       echo "[ns=${ns}][pod=${virtV2VPod}] Collecting virt-v2v Pod logs..."
-      /usr/bin/oc logs --all-containers --namespace ${ns} ${virtV2VPod} &> "${object_collection_path}/current.log" &
+      /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${virtV2VPod} &> "${object_collection_path}/current.log" &
       pwait $max_parallelism
     fi
 
@@ -79,7 +81,7 @@ for nsvm in ${target_vms[@]}; do
       object_collection_path="/must-gather/namespaces/${ns}/logs/${populatorPod}"
       mkdir -p ${object_collection_path}
       echo "[ns=${ns}][pod=${populatorPod}] Collecting Populator Pod logs..."
-      /usr/bin/oc logs --all-containers --namespace ${ns} ${populatorPod} &> "${object_collection_path}/current.log" &
+      /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${populatorPod} &> "${object_collection_path}/current.log" &
       pwait $max_parallelism
     fi
   done
@@ -97,7 +99,7 @@ if [[ -z "${target_vms}" && ! -z "${target_migrations}" ]]; then
         object_collection_path="/must-gather/namespaces/${target_ns}/logs/${pod}"
         mkdir -p ${object_collection_path}
         echo "[ns=${target_ns}][pod=${pod}] Collecting migration Pod logs (no VM)..."
-        /usr/bin/oc logs --all-containers --namespace ${target_ns} ${pod} &> "${object_collection_path}/current.log" &
+        /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${target_ns} ${pod} &> "${object_collection_path}/current.log" &
         pwait $max_parallelism
       done
     done
@@ -115,7 +117,7 @@ for nsdv in ${target_dvs[@]}; do
     object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
     mkdir -p ${object_collection_path}
     echo "[ns=${ns}][pod=${pod}] Collecting CDI Importer Pod logs..."
-    /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+    /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
     pwait $max_parallelism
   fi
 done
@@ -138,7 +140,7 @@ for nspvc in ${target_pvcs[@]}; do
       object_collection_path="/must-gather/namespaces/${ns}/logs/${pod}"
       mkdir -p ${object_collection_path}
       echo "[ns=${ns}][pod=${pod}] Collecting CDI Importer Pod logs..."
-      /usr/bin/oc logs --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
+      /usr/bin/oc logs ${log_collection_args} --all-containers --namespace ${ns} ${pod} &> "${object_collection_path}/current.log" &
       pwait $max_parallelism
     done
   fi
@@ -150,7 +152,7 @@ for nsjobpod in ${target_job_pods[@]}; do
   object_collection_path="/must-gather/namespaces/${ns}/logs/${job_pod}"
   mkdir -p ${object_collection_path}
   echo "[ns=${ns}][job=${job_pod}] Collecting migration hook job's pod logs..."
-  /usr/bin/oc logs --namespace ${ns} ${job_pod} &> "${object_collection_path}/current.log" &
+  /usr/bin/oc logs ${log_collection_args} --namespace ${ns} ${job_pod} &> "${object_collection_path}/current.log" &
   pwait $max_parallelism
 done
 
