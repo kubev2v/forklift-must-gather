@@ -48,7 +48,7 @@ done
 # Collect virt-launcher and virt-v2v pod logs for migrated VMs (from VM's target namespace)
 for nsvm in ${target_vms[@]}; do
   IFS="," read ns vm vmid <<< $nsvm
-  virtLauncherPod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep $vm | head -1)
+  virtLauncherPod=$(oc get pods --no-headers -n $ns --selector kubevirt.io=virt-launcher,vm.kubevirt.io/name=$vm -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -1)
 
   if [[ -z $virtLauncherPod ]]; then
     echo "Virt-launcher Pod for $nsvm doesn't exist, skipping."
