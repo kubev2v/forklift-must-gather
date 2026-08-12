@@ -1,4 +1,4 @@
-FROM registry.redhat.io/openshift4/ose-cli:v4.15.0-202503170806.p0.g8231637.assembly.stream.el8
+FROM registry.redhat.io/openshift4/ose-cli-rhel9@sha256:522751ec875f4282ccb99dec8e4527dedc528ab5632503fefe750c2cab823a05
 
 WORKDIR /app
 COPY --chown=1001:0 ./ ./
@@ -17,7 +17,7 @@ ARG CPE
 
 LABEL \
     com.redhat.component="mtv-must-gather-container" \
-    cpe="cpe:/a:redhat:migration_toolkit_virtualization:${CPE}::el8" \
+    cpe="cpe:/a:redhat:migration_toolkit_virtualization:${CPE}::el9" \
     version="$VERSION" \
     name="${REGISTRY}/mtv-must-gather-rhel8" \
     license="Apache License 2.0" \
