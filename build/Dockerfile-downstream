@@ -19,7 +19,7 @@ LABEL \
     com.redhat.component="mtv-must-gather-container" \
     cpe="cpe:/a:redhat:migration_toolkit_virtualization:${CPE}::el9" \
     version="$VERSION" \
-    name="${REGISTRY}/mtv-must-gather-rhel8" \
+    name="${REGISTRY}/mtv-must-gather-rhel9" \
     license="Apache License 2.0" \
     io.k8s.display-name="Migration Toolkit for Virtualization" \
     io.k8s.description="Migration Toolkit for Virtualization - Must Gather" \
