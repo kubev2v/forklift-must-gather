@@ -179,7 +179,7 @@ spec:
       - name: dev-package-managers
         value: 'true'
       - name: ACTIVATION_KEY
-        value: activation-key-rhel8
+        value: activation-key-rhel9
       - name: enable-package-registry-proxy
         value: $(params.enable-package-registry-proxy)
       runAfter:
