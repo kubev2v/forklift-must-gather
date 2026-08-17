@@ -7,6 +7,8 @@
 # Can be executed by: oc adm must-gather --image quay.io/konveyor/forklift-must-gather:latest -- NS=foo PLAN=bar VM=baz /usr/bin/targeted
 #
 
+source common.sh
+
 unset KUBECONFIG
 
 # Explore where Forklift is installed
@@ -26,15 +28,9 @@ echo "Cleaning must-gather directory structure..."
 find /must-gather -type f -empty -print -delete
 find /must-gather -type d -empty -print -delete
 
-# Tar all must-gather artifacts for faster transmission 
-echo "Tarring must-gather artifacts..."
-archive_path="/must-gather-archive"
-mkdir -p ${archive_path}
-tar -zcf ${archive_path}/must-gather.tar.gz /must-gather/
-rm -rf /must-gather/*
-mv ${archive_path}/must-gather.tar.gz /must-gather/
-rmdir ${archive_path}
-echo "Created /must-gather/must-gather.tar.gz"
+# Tar all must-gather artifacts for faster transmission
+# (skipped when MTV_DO_NOT_TAR is set, leaving the plain tree in place)
+tar_artifacts
 
 echo "Waiting for copy phase..."
 exit 0
