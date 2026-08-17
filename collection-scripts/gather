@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source common.sh
+
 unset KUBECONFIG
 
 # Explore where Forklift is installed
@@ -18,15 +20,9 @@ for localns in $(/usr/bin/oc get forkliftcontrollers.forklift.konveyor.io --all-
   wait
 done
 
-# Tar all must-gather artifacts for faster transmission 
-echo "Tarring must-gather artifacts..."
-archive_path="/must-gather-archive"
-mkdir -p ${archive_path}
-tar -zcf ${archive_path}/must-gather.tar.gz /must-gather/
-rm -rf /must-gather/*
-mv ${archive_path}/must-gather.tar.gz /must-gather/
-rmdir ${archive_path}
-echo "Created /must-gather/must-gather.tar.gz"
+# Tar all must-gather artifacts for faster transmission
+# (skipped when MTV_DO_NOT_TAR is set, leaving the plain tree in place)
+tar_artifacts
 
 
 echo "Waiting for copy phase..."
