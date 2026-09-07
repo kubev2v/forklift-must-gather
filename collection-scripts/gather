@@ -18,16 +18,19 @@ for localns in $(/usr/bin/oc get forkliftcontrollers.forklift.konveyor.io --all-
   wait
 done
 
-# Tar all must-gather artifacts for faster transmission 
-echo "Tarring must-gather artifacts..."
-archive_path="/must-gather-archive"
-mkdir -p ${archive_path}
-tar -zcf ${archive_path}/must-gather.tar.gz /must-gather/
-rm -rf /must-gather/*
-mv ${archive_path}/must-gather.tar.gz /must-gather/
-rmdir ${archive_path}
-echo "Created /must-gather/must-gather.tar.gz"
-
+if [ -n "${MUST_GATHER_SKIP_TAR:-}" ]; then
+  echo "MUST_GATHER_SKIP_TAR is set, skipping tar of must-gather artifacts"
+else
+  # Tar all must-gather artifacts for faster transmission
+  echo "Tarring must-gather artifacts..."
+  archive_path="/must-gather-archive"
+  mkdir -p ${archive_path}
+  tar -zcf ${archive_path}/must-gather.tar.gz /must-gather/
+  rm -rf /must-gather/*
+  mv ${archive_path}/must-gather.tar.gz /must-gather/
+  rmdir ${archive_path}
+  echo "Created /must-gather/must-gather.tar.gz"
+fi
 
 echo "Waiting for copy phase..."
 exit 0
