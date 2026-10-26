@@ -1,4 +1,4 @@
-FROM registry.redhat.io/openshift4/ose-cli-rhel9@sha256:522751ec875f4282ccb99dec8e4527dedc528ab5632503fefe750c2cab823a05
+FROM registry.redhat.io/openshift4/ose-cli-rhel9@sha256:d5c1fc14d52c049a265c6719b6c5a947c1a6f7afb31793b35027f8ca61c4a8dd
 
 WORKDIR /app
 COPY --chown=1001:0 ./ ./
