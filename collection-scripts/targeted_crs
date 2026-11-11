@@ -83,7 +83,7 @@ function dump_resource {
   ocobject=$2
   ocproject=$3
   echo "Dumping ${resource}: ${ocobject} from ${ocproject}"
-  if [ -z "${ocproject}" ]|[ "${ocproject}" == "<none>" ]; then
+  if [ -z "${ocproject}" ] || [ "${ocproject}" == "<none>" ]; then
     object_collection_path=/must-gather/cluster-scoped-resources/${resource}
     mkdir -p ${object_collection_path}
     /usr/bin/oc get ${resource} -o yaml ${ocobject} &> ${object_collection_path}/${ocobject}.yaml
