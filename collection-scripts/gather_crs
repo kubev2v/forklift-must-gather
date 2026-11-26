@@ -5,35 +5,61 @@ max_parallelism=10
 # Namespaces passed in from main gather
 namespaces=$1
 
+# Everything must be written under /must-gather: it is the only directory
+# oc adm must-gather copies out of the pod. Do not use relative paths here,
+# the working directory of the container depends on the image (WORKDIR /app
+# in the downstream image) and files written relative to it never reach the
+# must-gather bundle.
+output_root=/must-gather
+
 # Resource list
 resources=()
 
 # Dump forklift and kubevirt CRs
 for component in forklift kubevirt; do
+  # Reset the resource list per component, otherwise the kubevirt pass
+  # re-collects every forklift CRD a second time.
+  resources=()
   for i in $(/usr/bin/oc get crd | grep ${component} | awk '{print $1}'); do
     resources+=($i)
   done
 
   echo "Starting collection of: [${resources[@]}]"
+  if [ ${#resources[@]} -eq 0 ]; then
+    echo "WARNING: no ${component} CRDs found"
+    continue
+  fi
 
   # we use nested loops to nicely output objects partitioned per namespace, kind
   for resource in ${resources[@]}; do
     echo "Collecting ${resource}"
-    /usr/bin/oc get ${resource} --all-namespaces -o custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers 2> /dev/null | \
+    # List the objects first and feed them to the loop with a herestring
+    # instead of a pipe: the object fetches below must be background jobs of
+    # this shell so that the final wait covers them, otherwise the script can
+    # exit while files are still being written.
+    if ! oc_listing=$(/usr/bin/oc get ${resource} --all-namespaces -o custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers 2> /dev/null); then
+      echo "WARNING: failed to list ${resource}, skipping its collection"
+      continue
+    fi
+    if [ -z "${oc_listing}" ]; then
+      echo "No ${resource} objects found"
+      continue
+    fi
     while read ocresource; do
+      [ -z "${ocresource}" ] && continue
       ocobject=$(echo $ocresource | awk '{print $1}')
       ocproject=$(echo $ocresource | awk '{print $2}')
-      if [ -z "${ocproject}" ]|[ "${ocproject}" == "<none>" ]; then
-        object_collection_path=must-gather/cluster-scoped-resources/${resource}
+      if [ -z "${ocproject}" ] || [ "${ocproject}" == "<none>" ]; then
+        object_collection_path=${output_root}/cluster-scoped-resources/${resource}
         mkdir -p ${object_collection_path}
         /usr/bin/oc get ${resource} -o yaml ${ocobject} &> ${object_collection_path}/${ocobject}.yaml &
       else
-        object_collection_path=must-gather/namespaces/${ocproject}/crs/${resource}
+        object_collection_path=${output_root}/namespaces/${ocproject}/crs/${resource}
         mkdir -p ${object_collection_path}
         /usr/bin/oc get ${resource} -n ${ocproject} -o yaml ${ocobject} &> ${object_collection_path}/${ocobject}.yaml &
       fi
       pwait $max_parallelism
-    done
+    done <<< "${oc_listing}"
   done
 done
 
